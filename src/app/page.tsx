@@ -1,6 +1,7 @@
 import ArrivalScene from '@/components/sections/ArrivalScene';
-import MeetRahimScene from '@/components/sections/MeetRahimScene';
+import FounderStoryScene from '@/components/sections/FounderStoryScene';
 import ServicesScene from '@/components/sections/ServicesScene';
+import WorkshopScene from '@/components/sections/WorkshopScene';
 import AccessoriesScene from '@/components/sections/AccessoriesScene';
 import GalleryScene from '@/components/sections/GalleryScene';
 import ContactScene from '@/components/sections/ContactScene';
@@ -25,11 +26,12 @@ export default function HomePage() {
   return (
     <>
       <ArrivalScene />
-      <MeetRahimScene />
+      <FounderStoryScene />
 
       <MarqueeTicker items={MARQUEE_ITEMS} speed={35} />
 
       <ServicesScene />
+      <WorkshopScene />
       <AccessoriesScene />
 
       <SceneDivider />

@@ -114,7 +114,7 @@ export default function SplitText({
   };
 
   return (
-    <Tag ref={containerRef as React.Ref<HTMLElement>} className={className} style={containerStyle}>
+    <Tag ref={containerRef as React.Ref<any>} className={className} style={containerStyle}>
       {tokens.map((token, i) => {
         // Preserve whitespace tokens
         if (/^\s+$/.test(token)) {

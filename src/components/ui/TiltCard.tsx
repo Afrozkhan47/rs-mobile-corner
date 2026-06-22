@@ -83,7 +83,7 @@ export default function TiltCard({
 
   return (
     <Tag
-      ref={ref as React.Ref<HTMLDivElement>}
+      ref={ref as React.Ref<any>}
       className={className}
       style={containerStyle}
       onMouseMove={handleMouseMove}
