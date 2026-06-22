@@ -1,0 +1,398 @@
+/* ============================================
+   RS MOBILE CORNER — Cinematic Design System
+   Warm Neutral · Editorial · Alive
+   ============================================ */
+
+/* --- Tier 1: Literal Design Tokens --- */
+:root {
+  /* Warm Neutral Palette */
+  --color-cream-50: #FAF8F3;
+  --color-cream-100: #F5F2EB;
+  --color-cream-200: #EDE8DD;
+  --color-cream-300: #E2DACE;
+  --color-cream-400: #D5CCBC;
+  --color-warm-gray-500: #A89F8F;
+  --color-warm-gray-600: #8A8175;
+  --color-warm-gray-700: #6B645A;
+  --color-charcoal-800: #3D3833;
+  --color-charcoal-900: #2A2622;
+  --color-charcoal-950: #1A1714;
+
+  /* Accent Colors */
+  --color-amber: #C9A961;
+  --color-amber-glow: rgba(201, 169, 97, 0.15);
+  --color-amber-soft: rgba(201, 169, 97, 0.08);
+  --color-whatsapp: #25D366;
+  --color-whatsapp-hover: #1FB65A;
+
+  /* Typography */
+  --font-sans: var(--font-inter), 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
+  --font-serif: var(--font-instrument-serif), 'Instrument Serif', 'Georgia', serif;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 6rem;
+  --space-5xl: 8rem;
+  --space-section: clamp(6rem, 15vh, 12rem);
+
+  /* Border Radius Scale */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 999px;
+
+  /* Shadow Scale */
+  --shadow-sm: 0 2px 8px rgba(26, 23, 20, 0.04);
+  --shadow-md: 0 8px 24px rgba(26, 23, 20, 0.06);
+  --shadow-lg: 0 16px 48px rgba(26, 23, 20, 0.08);
+  --shadow-xl: 0 24px 64px rgba(26, 23, 20, 0.12);
+  --shadow-glow: 0 0 60px rgba(201, 169, 97, 0.12);
+
+  /* Motion System */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-magnetic: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --duration-instant: 120ms;
+  --duration-fast: 200ms;
+  --duration-normal: 400ms;
+  --duration-slow: 600ms;
+  --duration-reveal: 800ms;
+  --duration-cinematic: 1200ms;
+
+  /* Z-Index Layers */
+  --z-deep: -1;
+  --z-base: 0;
+  --z-content: 1;
+  --z-float: 10;
+  --z-nav: 100;
+  --z-overlay: 200;
+  --z-grain: 9998;
+  --z-cursor: 9999;
+
+  /* Layout */
+  --width-max: 1200px;
+  --width-narrow: 900px;
+  --section-padding-x: clamp(1.25rem, 5vw, 5rem);
+  --nav-height: 4.5rem;
+
+  /* Typography Scale */
+  --text-hero: clamp(2.8rem, 7vw, 7rem);
+  --text-display: clamp(2.2rem, 5.5vw, 5rem);
+  --text-heading: clamp(1.6rem, 3.2vw, 2.8rem);
+  --text-subhead: clamp(1.125rem, 1.8vw, 1.5rem);
+  --text-body: clamp(0.9375rem, 1.1vw, 1.0625rem);
+  --text-body-lg: clamp(1.0625rem, 1.3vw, 1.25rem);
+  --text-caption: clamp(0.75rem, 0.85vw, 0.875rem);
+  --text-micro: 0.6875rem;
+  --text-label: 0.75rem;
+
+  /* Line Heights */
+  --leading-tight: 1.05;
+  --leading-snug: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  /* Letter Spacing */
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.015em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.06em;
+  --tracking-wider: 0.12em;
+  --tracking-widest: 0.2em;
+}
+
+/* --- Tier 2: Semantic Design Tokens --- */
+:root {
+  --color-bg: var(--color-cream-100);
+  --color-bg-deep: var(--color-cream-200);
+  --color-surface: #FFFFFF;
+  --color-surface-glass: rgba(255, 255, 255, 0.6);
+  --color-text-primary: var(--color-charcoal-950);
+  --color-text-secondary: var(--color-warm-gray-700);
+  --color-text-muted: var(--color-warm-gray-600);
+  --color-text-subtle: var(--color-warm-gray-500);
+  --color-border: var(--color-cream-300);
+  --color-border-hover: var(--color-cream-400);
+  --color-accent: var(--color-whatsapp);
+  --color-accent-hover: var(--color-whatsapp-hover);
+
+  --font-body: var(--font-sans);
+  --font-heading: var(--font-display);
+  --font-editorial: var(--font-serif);
+}
+
+/* --- Tier 3: Component Tokens --- */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-hover: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --glass-border-accent: rgba(201, 169, 97, 0.25);
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 32px rgba(26, 23, 20, 0.06);
+
+  --card-radius: var(--radius-xl);
+  --card-padding: clamp(1.5rem, 3.5vw, 3rem);
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: auto; /* Lenis handles smooth scroll */
+  scrollbar-color: var(--color-cream-400) transparent;
+  scrollbar-width: thin;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: var(--color-amber);
+  color: var(--color-charcoal-950);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+img, video {
+  display: block;
+  max-width: 100%;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.will-animate {
+  will-change: transform, opacity;
+}
+
+.gpu-layer {
+  transform: translateZ(0);
+}
+
+/* ============================================
+   Animated Grain Overlay
+   ============================================ */
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.028;
+  z-index: var(--z-grain);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: grain 8s steps(10) infinite;
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+
+/* ============================================
+   Ambient Light Layer
+   ============================================ */
+
+.ambient-light {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-deep);
+  overflow: hidden;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0;
+  animation: ambient-breathe 12s ease-in-out infinite;
+}
+
+.ambient-orb--primary {
+  width: 600px;
+  height: 600px;
+  top: -10%;
+  right: -5%;
+  background: radial-gradient(circle, rgba(201, 169, 97, 0.08) 0%, transparent 70%);
+  animation-delay: 0s;
+}
+
+.ambient-orb--secondary {
+  width: 500px;
+  height: 500px;
+  bottom: 10%;
+  left: -8%;
+  background: radial-gradient(circle, rgba(201, 169, 97, 0.05) 0%, transparent 70%);
+  animation-delay: -4s;
+}
+
+.ambient-orb--tertiary {
+  width: 400px;
+  height: 400px;
+  top: 40%;
+  left: 30%;
+  background: radial-gradient(circle, rgba(237, 232, 221, 0.12) 0%, transparent 70%);
+  animation-delay: -8s;
+}
+
+@keyframes ambient-breathe {
+  0%, 100% { opacity: 0.4; transform: scale(1) translate(0, 0); }
+  33% { opacity: 0.7; transform: scale(1.1) translate(10px, -15px); }
+  66% { opacity: 0.5; transform: scale(0.95) translate(-8px, 10px); }
+}
+
+/* ============================================
+   Subtle Grid Texture
+   ============================================ */
+
+.grid-texture {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-deep);
+  opacity: 0.03;
+  background-image:
+    radial-gradient(circle, var(--color-warm-gray-500) 0.5px, transparent 0.5px);
+  background-size: 32px 32px;
+}
+
+/* ============================================
+   Cinematic Vignette
+   ============================================ */
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: var(--z-grain);
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(201, 169, 97, 0.025) 100%
+  );
+}
+
+/* ============================================
+   Glass Card Base
+   ============================================ */
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--card-radius);
+}
+
+.glass--accent {
+  border-color: var(--glass-border-accent);
+}
+
+/* ============================================
+   Section Transitions
+   ============================================ */
+
+.scene-divider {
+  width: 100%;
+  height: clamp(2rem, 6vh, 5rem);
+  position: relative;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(201, 169, 97, 0.03),
+    transparent
+  );
+}
+
+/* ============================================
+   Reduced Motion — Modern Approach
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .noise-overlay {
+    animation: none;
+  }
+
+  .ambient-orb {
+    animation: none;
+    opacity: 0.4;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

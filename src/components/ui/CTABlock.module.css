@@ -1,0 +1,112 @@
+.block {
+  background: var(--color-surface);
+  border-radius: var(--radius-2xl);
+  padding: clamp(3rem, 6vw, 6rem);
+  position: relative;
+  overflow: hidden;
+}
+
+.bgDecor {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 3rem;
+  opacity: 0.04;
+  color: var(--color-text-primary);
+  pointer-events: none;
+}
+
+.bgDecor svg {
+  width: clamp(8rem, 15vw, 15rem);
+  height: clamp(8rem, 15vw, 15rem);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4xl);
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+  }
+}
+
+.heading {
+  font-size: var(--text-hero);
+  font-family: var(--font-heading);
+  font-weight: 500;
+  letter-spacing: var(--tracking-tighter);
+  line-height: var(--leading-tight);
+  margin-bottom: var(--space-xl);
+  text-wrap: balance;
+}
+
+.description {
+  font-size: var(--text-body-lg);
+  opacity: 0.5;
+  line-height: var(--leading-relaxed);
+  max-width: 28rem;
+  margin-bottom: var(--space-3xl);
+  font-weight: 300;
+  text-wrap: pretty;
+}
+
+.metaGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.metaLabel {
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.metaValue {
+  font-size: var(--text-subhead);
+  font-weight: 400;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.actionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xl) var(--space-2xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: border-color var(--duration-normal) var(--ease-out-expo),
+              background var(--duration-normal) var(--ease-out-expo);
+  min-block-size: 44px;
+}
+
+.actionLabel {
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  font-weight: 500;
+}
+
+.actionIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}

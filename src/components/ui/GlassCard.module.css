@@ -1,0 +1,9 @@
+.card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+  transition: border-color var(--duration-slow) var(--ease-out-expo);
+}
