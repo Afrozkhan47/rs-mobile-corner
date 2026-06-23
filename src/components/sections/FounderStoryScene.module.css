@@ -7,23 +7,23 @@
 .container {
   height: 100vh;
   display: grid;
-  grid-template-columns: 0.95fr 1.05fr;
+  grid-template-columns: 0.9fr 1.1fr;
   align-items: center;
   padding: 0 var(--section-padding-x);
-  gap: 5rem;
+  gap: 4rem;
   max-width: var(--width-max);
   margin: 0 auto;
   position: relative;
   overflow: hidden;
 }
 
-/* ── Left Side: Header ── */
+/* ── Header ── */
 
 .header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .eyebrow {
@@ -43,20 +43,46 @@
   color: var(--color-text-primary);
 }
 
-.progressText {
+/* Progress Tracker Bar */
+.progressTracker {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  width: 100%;
+  max-width: 320px;
+}
+
+.progressIndex, .progressTotal {
+  font-family: var(--font-heading);
   font-size: var(--text-caption);
   color: var(--color-text-muted);
-  font-family: var(--font-heading);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  margin-top: 1rem;
+  font-weight: 500;
+}
+
+.progressBar {
+  flex: 1;
+  height: 2px;
+  background: var(--color-border);
+  border-radius: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progressFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--color-amber);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .scrollIndicatorMobile {
   display: none;
 }
 
-/* ── Right Side: Stacked Card Deck ── */
+/* ── Horizontal Stacked Card Deck ── */
 
 .deck {
   position: relative;
@@ -64,7 +90,7 @@
   max-width: 440px;
   height: 480px;
   justify-self: center;
-  perspective: 1200px;
+  perspective: 1500px;
   transform-style: preserve-3d;
 }
 
@@ -80,26 +106,25 @@
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.85);
   border-radius: var(--radius-2xl);
-  /* Strong shadow depth and premium perspective */
   box-shadow:
-    0 30px 100px rgba(26, 23, 20, 0.1),
-    0 10px 30px rgba(26, 23, 20, 0.04);
+    0 30px 90px rgba(26, 23, 20, 0.08),
+    0 10px 30px rgba(26, 23, 20, 0.03);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   will-change: transform, opacity;
+  transition:
+    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
 }
 
-/* Active State Styles */
 .activeCard {
   box-shadow:
-    0 40px 120px rgba(26, 23, 20, 0.14),
+    0 40px 110px rgba(26, 23, 20, 0.12),
     0 15px 40px rgba(26, 23, 20, 0.06);
-}
-
-/* Exit/Past State */
-.previousCard {
-  pointer-events: none;
+  border-color: rgba(201, 169, 97, 0.25);
 }
 
 /* Inside Card Styling */
@@ -111,12 +136,13 @@
   width: 100%;
 }
 
-.cardIndex {
+.cardNum {
   font-family: var(--font-heading);
   font-size: var(--text-caption);
   color: var(--color-text-subtle);
   font-weight: 500;
   letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
 }
 
 .cardYear {
@@ -139,7 +165,7 @@
   font-size: var(--text-heading);
   font-weight: 600;
   color: var(--color-text-primary);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .cardDesc {
@@ -181,6 +207,10 @@
   font-size: 3rem;
 }
 
+.swipeTip {
+  display: none;
+}
+
 /* ============================================
    Mobile layout (Responsive)
    ============================================ */
@@ -188,10 +218,10 @@
 @media (max-width: 768px) {
   .container {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr;
-    gap: 2.5rem;
-    height: 100vh;
-    padding: calc(var(--nav-height) + 1.5rem) 1.5rem 2rem;
+    grid-template-rows: auto 1fr auto;
+    gap: 2rem;
+    height: auto;
+    padding: calc(var(--nav-height) + 1rem) 1.5rem 3rem;
     justify-content: center;
   }
 
@@ -199,25 +229,26 @@
     align-items: center;
     text-align: center;
     gap: 0.5rem;
+    width: 100%;
   }
 
   .sectionTitle {
     font-size: clamp(1.8rem, 7vw, 2.3rem);
   }
 
+  .progressTracker {
+    margin: 0.5rem auto 0;
+  }
+
   .deck {
     height: 380px;
-    max-width: 100%;
+    max-width: 320px;
     width: 100%;
-    margin-top: 0;
+    margin: 1.5rem auto 0;
   }
 
   .card {
-    padding: 2rem;
-  }
-
-  .cardBody {
-    margin-top: 0.75rem;
+    padding: 2.2rem;
   }
 
   .cardTitle {
@@ -233,30 +264,13 @@
     font-size: 2.8rem;
   }
 
-  .scrollIndicatorMobile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
+  .swipeTip {
+    display: block;
+    text-align: center;
     font-size: var(--text-micro);
     text-transform: uppercase;
     letter-spacing: var(--tracking-wider);
     color: var(--color-text-subtle);
-    margin-top: 0.5rem;
+    margin-top: 1rem;
   }
-
-  .chevron {
-    width: 8px;
-    height: 8px;
-    border-right: 1px solid var(--color-text-subtle);
-    border-bottom: 1px solid var(--color-text-subtle);
-    transform: rotate(45deg);
-    animation: chevronDown 1.5s infinite;
-  }
-}
-
-@keyframes chevronDown {
-  0% { transform: translate(0, -4px) rotate(45deg); opacity: 0; }
-  50% { opacity: 0.8; }
-  100% { transform: translate(0, 4px) rotate(45deg); opacity: 0; }
 }

@@ -21,9 +21,9 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 
 // The 3 essential badges requested
 const badges = [
-  { text: 'Personally Repaired', icon: '✓' },
-  { text: 'Honest Diagnosis', icon: '◆' },
-  { text: 'Since 2021', icon: '★' },
+  { text: 'Personally Repaired', icon: '✓', key: 'badge1' },
+  { text: 'Honest Diagnosis', icon: '◆', key: 'badge2' },
+  { text: 'Since 2021', icon: '★', key: 'badge3' },
 ];
 
 export default function ArrivalScene() {
@@ -111,34 +111,33 @@ export default function ArrivalScene() {
         />
       </div>
 
+      {/* Overlapping Gold Signature container (desktop overlay) */}
+      <div className={styles.signatureContainer} aria-hidden="true">
+        <svg viewBox="0 0 320 80" className={styles.handwrittenSvg}>
+          <text
+            x="10"
+            y="55"
+            fontFamily="'La Belle Aurore', 'Brush Script MT', 'Dancing Script', 'Instrument Serif', cursive"
+            fontSize="48"
+            fill="none"
+            stroke="var(--color-amber)"
+            strokeWidth="1.2"
+            className={styles.signatureText}
+          >
+            Meet Rahim Bhai
+          </text>
+        </svg>
+      </div>
+
       {/* Copy Zone */}
       <div className={styles.copyZone}>
-        {/* Handwritten signature draw-in animation */}
-        <div className={styles.signatureWrap} aria-hidden="true">
-          <svg viewBox="0 0 240 50" className={styles.handwrittenSvg}>
-            <text
-              x="5"
-              y="32"
-              fontFamily="'Instrument Serif', Georgia, serif"
-              fontSize="24"
-              fontStyle="italic"
-              fill="none"
-              stroke="var(--color-amber)"
-              strokeWidth="1.2"
-              className={styles.signatureText}
-            >
-              Meet Rahim Bhai
-            </text>
-          </svg>
-        </div>
-
         <h1 className={styles.headline}>
           <SplitText
             mode="words"
             preset="fadeUp"
             stagger={0.05}
             duration={0.7}
-            delay={0.3}
+            delay={0.2}
             trigger="mount"
             tag="span"
           >
@@ -148,12 +147,12 @@ export default function ArrivalScene() {
             className={styles.headlineRotate}
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, ease: EASE, delay: reduceMotion ? 0 : 1.0 }}
+            transition={{ duration: 0.4, ease: EASE, delay: reduceMotion ? 0 : 0.9 }}
           >
             <RotatingText
               words={[...heroRotatingWords]}
               interval={3000}
-              startDelay={reduceMotion ? 0 : 1100}
+              startDelay={reduceMotion ? 0 : 1000}
               className={styles.rotatingWord}
             />
           </motion.span>
@@ -163,7 +162,7 @@ export default function ArrivalScene() {
           className={styles.ctaRow}
           initial={reduceMotion ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 0.8 }}
+          transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 0.7 }}
         >
           <MagneticButton
             href={whatsappHref}
@@ -194,18 +193,6 @@ export default function ArrivalScene() {
             Directions
           </MagneticButton>
         </motion.div>
-
-        {/* Essential Address / Info */}
-        <motion.div
-          className={styles.miniMeta}
-          initial={reduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 0.6 }}
-          transition={{ duration: 0.5, delay: 1.2 }}
-        >
-          <span>📍 {business.location}</span>
-          <span>•</span>
-          <span>9:30 AM – 9:30 PM</span>
-        </motion.div>
       </div>
 
       {/* Right: Portrait Zone */}
@@ -231,14 +218,14 @@ export default function ArrivalScene() {
           <div className={styles.badgesWrap}>
             {badges.map((badge, i) => (
               <motion.div
-                key={badge.text}
+                key={badge.key}
                 className={`${styles.trustBadge} ${badgePositions[i]} ${styles[`badgeFloat${i + 1}`]}`}
                 initial={reduceMotion ? false : { opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{
                   duration: 0.5,
                   ease: EASE,
-                  delay: reduceMotion ? 0 : 0.5 + i * 0.1,
+                  delay: reduceMotion ? 0 : 0.4 + i * 0.1,
                 }}
                 style={badgeStyle(i)}
               >
@@ -261,7 +248,7 @@ export default function ArrivalScene() {
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 0.3 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 1.4 }}
+            transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 1.2 }}
           >
             <span className={styles.scrollLabel}>Scroll</span>
             <div className={styles.scrollTrack}>

@@ -3,8 +3,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
+import { business } from '@/content/business';
 import styles from './ServicesScene.module.css';
+
+const whatsappHref = `https://wa.me/${business.whatsapp}?text=${encodeURIComponent(business.whatsappMessage)}`;
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -13,77 +16,61 @@ if (typeof window !== 'undefined') {
 const SERVICES = [
   {
     id: 'display',
-    icon: <DisplayIcon />,
-    title: 'Display & Screen',
-    description:
-      'Original and A-Grade display replacements for iPhone, Samsung, and all major brands. Clear, bright, and responsive.',
-    features: ['Original OEM Displays', 'A-Grade Quality Panels', 'Face Unlock Compatible'],
-    time: '≈ 15 Min',
-    warranty: 'Up to 6 Months Warranty',
+    title: 'Display Repair',
+    description: 'A-Grade display replacements for iPhone & Samsung. Bright, responsive, and durable.',
+    time: '30–60 min',
+    warranty: '6 Months Warranty',
+    illustration: 'display',
   },
   {
     id: 'battery',
-    icon: <BatteryIcon />,
     title: 'Battery Renewal',
-    description:
-      "Genuine battery cells with premium health monitoring. Restore your phone's full day battery life quickly and safely.",
-    features: ['Original Capacity Cells', 'Health Stats Verified', 'Overcharge Protection'],
-    time: '≈ 15 Min',
-    warranty: '3 Months Replacement Warranty',
+    description: 'Original capacity battery cells with stable charging control and warranty checks.',
+    time: '15–30 min',
+    warranty: '3 Months Warranty',
+    illustration: 'battery',
   },
   {
     id: 'charging',
-    icon: <ChargingIcon />,
     title: 'Charging Port',
-    description:
-      'From simple charging port lint cleaning to Charging IC and micro-soldering level repair.',
-    features: ['Port Cleaning & Repair', 'Charging IC Replacements', 'Type-C & Lightning Jacks'],
-    time: '≈ 15 Min',
+    description: 'Restoring jack connectivity, micro-cleaning, and IC swap soldering fixes.',
+    time: '15–45 min',
     warranty: '3 Months Warranty',
+    illustration: 'charging',
   },
   {
     id: 'motherboard',
-    icon: <BoardIcon />,
-    title: 'Motherboard Surgery',
-    description:
-      'Complex micro-soldering repairs including dead phone recovery, network IC swap, and CPU reballing.',
-    features: ['Micro-Soldering Support', 'Network IC Swap', 'Dead Device Recovery'],
-    time: '≈ 1 Hour+',
-    warranty: 'Diagnosed Case-by-Case',
+    title: 'Motherboard',
+    description: 'Complex micro-soldering motherboard recovery, chips, and dead swap.',
+    time: '1–3 Hours',
+    warranty: 'Case-by-Case Warranty',
+    illustration: 'board',
   },
   {
     id: 'camera',
-    icon: <CameraIcon />,
-    title: 'Camera & Sensors',
-    description:
-      'Replacing cracked camera glass lenses, fixing autofocus failures, and restoring front sensor functions.',
-    features: ['Camera Lens Replacement', 'Autofocus Recovery', 'Face ID Swaps'],
-    time: '≈ 30 Min',
+    title: 'Camera Repair',
+    description: 'Replacing cracked lenses, autofocus sensors, and front camera module chips.',
+    time: '30–45 min',
     warranty: '3 Months Warranty',
+    illustration: 'camera',
   },
   {
     id: 'software',
-    icon: <SoftwareIcon />,
-    title: 'Software & Flash',
-    description:
-      'Fixing boot loops, bricked firmware issues, unlocking, and performing secure memory backup.',
-    features: ['Firmware Flash', 'Boot Loop Fix', 'Secure Backup attempts'],
-    time: '≈ 45 Min',
-    warranty: 'Software support included',
+    title: 'Software Repair',
+    description: 'Bootloop flash recovery, system updates, locks, and recovery backup.',
+    time: '30–60 min',
+    warranty: 'System restoration',
+    illustration: 'software',
   },
   {
     id: 'water',
-    icon: <WaterIcon />,
     title: 'Water Damage',
-    description:
-      'Ultrasonic bath component-level cleaning, corrosion removal, and power circuit diagnostic recovery.',
-    features: ['Ultrasonic Cleaning', 'Corrosion Shielding', 'Short Circuit Diagnosis'],
-    time: '≈ 2 Hours+',
-    warranty: 'Restoration assurance',
+    description: 'Ultrasonic bath deep cleaning, circuit dry diagnostic, and corrosion shields.',
+    time: '2–4 Hours',
+    warranty: 'Diagnostic assurance',
+    illustration: 'water',
   },
 ];
-
-const EASE = [0.16, 1, 0.3, 1] as const;
 
 export default function ServicesScene() {
   const reduceMotion = useReducedMotion();
@@ -91,45 +78,35 @@ export default function ServicesScene() {
   const deckRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Dynamic poker card fan layout styling
-  const getCardTransform = (index: number, active: number) => {
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      return {}; // Handled by CSS flex layout on mobile
-    }
+  // Mobile Touch Swipe Handlers
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
-    const total = SERVICES.length;
-    const isActive = index === active;
-    const offset = index - active;
-    const absOffset = Math.abs(offset);
-
-    if (isActive) {
-      return {
-        transform: 'translateX(0) translateY(-40px) rotate(0deg) scale(1.15)',
-        zIndex: 40,
-        opacity: 1,
-      };
-    }
-
-    const direction = offset > 0 ? 1 : -1;
-    const translateX = direction * (70 + absOffset * 50) + (index - (total - 1) / 2) * 12;
-    const translateY = absOffset * 15;
-    const rotate = (index - (total - 1) / 2) * 5 + direction * 4;
-    const scale = 1 - absOffset * 0.06;
-    const opacity = Math.max(0.3, 1 - absOffset * 0.2);
-
-    return {
-      transform: `translateX(${translateX}px) translateY(${translateY}px) rotate(${rotate}deg) scale(${scale})`,
-      zIndex: 30 - absOffset,
-      opacity,
-    };
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
   };
 
-  // Pinned section to scroll-scrub services active state
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (diff > 50) {
+      // Swipe Left - Next Card
+      setActiveIndex((prev) => Math.min(prev + 1, SERVICES.length - 1));
+    } else if (diff < -50) {
+      // Swipe Right - Prev Card
+      setActiveIndex((prev) => Math.max(prev - 1, 0));
+    }
+  };
+
+  // Scroll Trigger mapping for desktop
   useEffect(() => {
     const section = sectionRef.current;
     if (!section || reduceMotion || (typeof window !== 'undefined' && window.innerWidth < 768)) return;
 
-    const scrollHeight = window.innerHeight * 1.2 * SERVICES.length;
+    const scrollHeight = window.innerHeight * 1.4 * SERVICES.length;
 
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
@@ -151,67 +128,115 @@ export default function ServicesScene() {
     return () => ctx.revert();
   }, [reduceMotion]);
 
+  // Card transform math: promoted active on left, inactive fanned cabinet-style to right
+  const getCardStyle = (index: number) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return {}; // Handled by CSS on mobile
+    }
+
+    const isActive = index === activeIndex;
+
+    if (isActive) {
+      return {
+        transform: 'translate3d(0, 0, 0) scale(1.05)',
+        zIndex: 50,
+        opacity: 1,
+      };
+    }
+
+    // Inactive fanned positions to the right
+    // Arrange in order:
+    let displayIndex = index;
+    if (index < activeIndex) {
+      displayIndex = index + SERVICES.length;
+    }
+    const relativeOrder = displayIndex - activeIndex;
+
+    const x = 380 + relativeOrder * 42;
+    const zIndex = 40 - relativeOrder;
+    const opacity = Math.max(0.4, 0.95 - relativeOrder * 0.1);
+
+    return {
+      transform: `translate3d(${x}px, 20px, 0) scale(0.96)`,
+      zIndex,
+      opacity,
+    };
+  };
+
   return (
     <section ref={sectionRef} className={styles.scene} id="services" aria-label="Repair Services">
       <div className={styles.container}>
         {/* Header */}
         <div className={styles.header}>
-          <span className={styles.eyebrow}>Services</span>
-          <h2 className={styles.heading}>The Stack Repair Deck</h2>
-          <p className={styles.subtext}>
-            Tap or scroll to examine Rahim Bhai&apos;s primary specialties.
-          </p>
+          <span className={styles.eyebrow}>Specialties</span>
+          <h2 className={styles.heading}>Interactive Repair Deck</h2>
         </div>
 
-        {/* Fanned Poker stacked card deck */}
-        <div ref={deckRef} className={styles.deck}>
+        {/* Fanned Cabinet Deck */}
+        <div
+          ref={deckRef}
+          className={styles.deck}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           {SERVICES.map((service, i) => {
             const isActive = i === activeIndex;
-            const cardStyle = getCardTransform(i, activeIndex);
+            const cardStyle = getCardStyle(i);
 
             return (
               <div
                 key={service.id}
-                className={`${styles.card} ${isActive ? styles.activeCard : ''}`}
+                className={`${styles.card} ${isActive ? styles.activeCard : styles.inactiveCard}`}
                 style={cardStyle}
                 onClick={() => setActiveIndex(i)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setActiveIndex(i);
-                  }
-                }}
               >
-                <div className={styles.cardHeader}>
-                  <div className={styles.iconBox}>{service.icon}</div>
-                  <span className={styles.index}>0{i + 1}</span>
+                {/* Vertical title on card edge for inactive cards (spine tab) */}
+                <div className={styles.verticalTab} aria-hidden={isActive ? 'true' : 'false'}>
+                  <span>{service.title}</span>
                 </div>
 
-                <div className={styles.cardBody}>
-                  <h3 className={styles.cardTitle}>{service.title}</h3>
-                  <p className={styles.cardDesc}>{service.description}</p>
-                </div>
-
-                {/* Details revealed on active promotion */}
-                <div className={styles.cardFooter}>
-                  <div className={styles.tagWrap}>
-                    {service.features.map((feature, idx) => (
-                      <span key={idx} className={styles.tag}>
-                        {feature}
-                      </span>
-                    ))}
+                {/* Normal Card Face (only rendered / fully visible when active) */}
+                <div className={styles.cardFace}>
+                  <div className={styles.cardHeader}>
+                    <span className={styles.index}>0{i + 1}</span>
+                    <h3 className={styles.cardTitle}>{service.title}</h3>
                   </div>
-                  <div className={styles.metaInfo}>
-                    <div className={styles.metaItem}>
-                      <ClockIcon />
-                      <span>{service.time}</span>
+
+                  <div className={styles.cardBody}>
+                    <p className={styles.cardDesc}>{service.description}</p>
+                    
+                    {/* Visual Schematic illustration */}
+                    <div className={styles.schematicWrap}>
+                      {service.illustration === 'display' && <DisplaySchematic />}
+                      {service.illustration === 'battery' && <BatterySchematic />}
+                      {service.illustration === 'charging' && <ChargingSchematic />}
+                      {service.illustration === 'board' && <BoardSchematic />}
+                      {service.illustration === 'camera' && <CameraSchematic />}
+                      {service.illustration === 'software' && <SoftwareSchematic />}
+                      {service.illustration === 'water' && <WaterSchematic />}
                     </div>
-                    <div className={styles.metaItem}>
-                      <ShieldIcon />
-                      <span>{service.warranty}</span>
+                  </div>
+
+                  <div className={styles.cardFooter}>
+                    <div className={styles.meta}>
+                      <div className={styles.metaItem}>
+                        <span className={styles.metaLabel}>Time</span>
+                        <span className={styles.metaVal}>{service.time}</span>
+                      </div>
+                      <div className={styles.metaItem}>
+                        <span className={styles.metaLabel}>Warranty</span>
+                        <span className={styles.metaVal}>{service.warranty}</span>
+                      </div>
                     </div>
+                    <a
+                      href={whatsappHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.actionBtn}
+                    >
+                      Book Repair
+                    </a>
                   </div>
                 </div>
               </div>
@@ -219,100 +244,115 @@ export default function ServicesScene() {
           })}
         </div>
 
-        {/* Manual Indicator Dots */}
-        <div className={styles.dotsWrap} aria-label="Services Navigation">
-          {SERVICES.map((_, i) => (
-            <button
-              key={i}
-              className={`${styles.dot} ${i === activeIndex ? styles.activeDot : ''}`}
-              onClick={() => setActiveIndex(i)}
-              aria-label={`Go to service chapter ${i + 1}`}
-            />
-          ))}
+        {/* Mobile carousel page indicator */}
+        <div className={styles.pageIndicator} aria-hidden="true">
+          <span>{activeIndex + 1} / {SERVICES.length}</span>
         </div>
       </div>
     </section>
   );
 }
 
-/* ── Custom SVGs ── */
+/* ── High-Fidelity SVG Repair Schematics ── */
 
-function DisplayIcon() {
+function DisplaySchematic() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="5" y="2" width="14" height="20" rx="2" />
-      <line x1="12" y1="18" x2="12" y2="18" strokeWidth="3" />
+    <svg viewBox="0 0 140 180" className={styles.schematic}>
+      <rect x="10" y="10" width="120" height="160" rx="12" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" />
+      {/* Notch */}
+      <rect x="50" y="10" width="40" height="8" rx="4" fill="var(--color-amber)" />
+      {/* Screen cracks */}
+      <path d="M 20,40 L 60,100 L 120,70 M 60,100 L 90,140 M 60,100 L 30,150" stroke="rgba(201, 169, 97, 0.4)" strokeWidth="1.2" strokeLinecap="round" />
+      <circle cx="60" cy="100" r="3" fill="var(--color-amber)" />
     </svg>
   );
 }
 
-function BatteryIcon() {
+function BatterySchematic() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="2" y="7" width="18" height="10" rx="2" />
-      <line x1="22" y1="11" x2="22" y2="13" strokeWidth="2" />
+    <svg viewBox="0 0 140 180" className={styles.schematic}>
+      <rect x="35" y="30" width="70" height="120" rx="8" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" />
+      <rect x="55" y="22" width="30" height="8" rx="2" fill="var(--color-amber)" />
+      {/* Charge level lines */}
+      <rect x="45" y="110" width="50" height="30" rx="2" fill="var(--color-amber)" opacity="0.8" />
+      <rect x="45" y="75" width="50" height="30" rx="2" fill="var(--color-amber)" opacity="0.4" />
+      {/* Lightning bolt */}
+      <path d="M 70,55 L 60,85 L 80,85 L 70,115" stroke="var(--color-amber)" strokeWidth="1.5" fill="none" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function ChargingIcon() {
+function ChargingSchematic() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M5 18H19M12 4V14M12 14L9 11M12 14L15 11" />
+    <svg viewBox="0 0 140 180" className={styles.schematic}>
+      <rect x="10" y="10" width="120" height="160" rx="12" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" opacity="0.3" />
+      {/* Charging Port Zoom */}
+      <circle cx="70" cy="150" r="22" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" />
+      {/* Type C jack */}
+      <rect x="58" y="145" width="24" height="10" rx="3" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" />
+      <line x1="63" y1="150" x2="77" y2="150" stroke="var(--color-amber)" strokeWidth="1.5" />
+      {/* Lightning wires */}
+      <path d="M 70,110 L 70,128 M 70,110 L 50,90 M 70,110 L 90,90" stroke="var(--color-amber)" strokeWidth="1.2" strokeDasharray="3 3" />
     </svg>
   );
 }
 
-function BoardIcon() {
+function BoardSchematic() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="4" y="4" width="16" height="16" rx="2" />
-      <rect x="9" y="9" width="6" height="6" rx="1" />
-      <line x1="9" y1="1" x2="9" y2="4" />
-      <line x1="15" y1="1" x2="15" y2="4" />
+    <svg viewBox="0 0 140 180" className={styles.schematic}>
+      <rect x="15" y="15" width="110" height="150" rx="6" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" />
+      {/* CPU Chip */}
+      <rect x="50" y="70" width="40" height="40" rx="4" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" />
+      <text x="58" y="94" fontFamily="sans-serif" fontSize="9" fill="var(--color-amber)" fontWeight="bold">CPU</text>
+      {/* Pins and circuit lines */}
+      <path d="M 30,30 L 50,30 M 30,50 L 50,50 M 90,30 L 110,30 M 90,50 L 110,50 M 70,30 L 70,70 M 70,110 L 70,150 M 50,90 L 25,90 M 90,90 L 115,90" stroke="var(--color-amber)" strokeWidth="1" opacity="0.5" />
+      <circle cx="30" cy="30" r="2" fill="var(--color-amber)" />
+      <circle cx="110" cy="30" r="2" fill="var(--color-amber)" />
     </svg>
   );
 }
 
-function CameraIcon() {
+function CameraSchematic() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
-      <circle cx="12" cy="13" r="4" />
+    <svg viewBox="0 0 140 180" className={styles.schematic}>
+      {/* Camera Module */}
+      <rect x="35" y="40" width="70" height="100" rx="10" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" />
+      {/* Lenses */}
+      <circle cx="70" cy="65" r="16" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" />
+      <circle cx="70" cy="65" r="8" fill="none" stroke="var(--color-amber)" strokeWidth="1" />
+      <circle cx="70" cy="110" r="12" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" />
+      {/* Aperture lines */}
+      <line x1="58" y1="53" x2="82" y2="77" stroke="var(--color-amber)" strokeWidth="1" opacity="0.6" />
+      <line x1="82" y1="53" x2="58" y2="77" stroke="var(--color-amber)" strokeWidth="1" opacity="0.6" />
     </svg>
   );
 }
 
-function SoftwareIcon() {
+function SoftwareSchematic() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polyline points="16 18 22 12 16 6" />
-      <polyline points="8 6 2 12 8 18" />
+    <svg viewBox="0 0 140 180" className={styles.schematic}>
+      <rect x="15" y="30" width="110" height="120" rx="8" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" />
+      {/* Code window bar */}
+      <line x1="15" y1="50" x2="125" y2="50" stroke="var(--color-amber)" strokeWidth="1.2" />
+      <circle cx="27" cy="40" r="2" fill="var(--color-amber)" />
+      <circle cx="35" cy="40" r="2" fill="var(--color-amber)" />
+      {/* Code lines */}
+      <text x="25" y="75" fontFamily="monospace" fontSize="10" fill="var(--color-amber)" opacity="0.9">{`class Device {`}</text>
+      <text x="35" y="95" fontFamily="monospace" fontSize="10" fill="var(--color-amber)" opacity="0.9">{`restore() {`}</text>
+      <text x="45" y="115" fontFamily="monospace" fontSize="10" fill="var(--color-amber)" opacity="0.6">{`flash(firmware);`}</text>
+      <text x="35" y="135" fontFamily="monospace" fontSize="10" fill="var(--color-amber)" opacity="0.9">{`}`}</text>
     </svg>
   );
 }
 
-function WaterIcon() {
+function WaterSchematic() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
-    </svg>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  );
-}
-
-function ShieldIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    <svg viewBox="0 0 140 180" className={styles.schematic}>
+      {/* Droplet */}
+      <path d="M 70,30 C 70,30 100,75 100,95 C 100,111.5 86.5,125 70,125 C 53.5,125 40,111.5 40,95 C 40,75 70,30 70,30 Z" fill="none" stroke="var(--color-amber)" strokeWidth="1.5" />
+      {/* Diagnostic ripple waves */}
+      <path d="M 30,150 Q 70,135 110,150" fill="none" stroke="var(--color-amber)" strokeWidth="1.2" opacity="0.8" />
+      <path d="M 20,162 Q 70,147 120,162" fill="none" stroke="var(--color-amber)" strokeWidth="1.2" opacity="0.4" />
     </svg>
   );
 }

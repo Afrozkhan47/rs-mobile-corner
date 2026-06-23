@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import { founderMilestones } from '@/content/story';
 import { business } from '@/content/business';
@@ -13,136 +13,156 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const EASE = [0.16, 1, 0.3, 1] as const;
-
 export default function FounderStoryScene() {
   const reduceMotion = useReducedMotion();
   const sectionRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
+  const deckRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
+  // Touch Swipe Handlers for Mobile First Carousel
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (diff > 50) {
+      // Swipe Left - Next Card
+      setActiveIndex((prev) => Math.min(prev + 1, founderMilestones.length - 1));
+    } else if (diff < -50) {
+      // Swipe Right - Prev Card
+      setActiveIndex((prev) => Math.max(prev - 1, 0));
+    }
+  };
+
+  // GSAP desktop scroll trigger fanning animation
   useEffect(() => {
     const section = sectionRef.current;
-    const container = containerRef.current;
-    const cardsContainer = cardsRef.current;
-    if (!section || !container || !cardsContainer || reduceMotion) return;
+    const deck = deckRef.current;
+    if (!section || !deck || reduceMotion || (typeof window !== 'undefined' && window.innerWidth < 768)) return;
 
-    const cards = gsap.utils.toArray<HTMLElement>(cardsContainer.children);
+    const cards = gsap.utils.toArray<HTMLElement>(deck.children);
     if (cards.length === 0) return;
 
-    const totalCards = cards.length;
-    const scrollHeight = window.innerHeight * 1.6 * totalCards;
+    const total = cards.length;
+    const scrollHeight = window.innerHeight * 1.5 * total;
 
     const ctx = gsap.context(() => {
-      // Pinned ScrollTrigger for the story deck container
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: `+=${scrollHeight}`,
-          pin: true,
-          scrub: 0.5,
-          onUpdate: (self) => {
-            const index = Math.min(
-              totalCards - 1,
-              Math.floor(self.progress * totalCards)
-            );
-            setActiveIndex(index);
-          },
+      // Pin the section and map scroll to activeIndex
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: `+=${scrollHeight}`,
+        pin: true,
+        scrub: 0.5,
+        onUpdate: (self) => {
+          const index = Math.min(
+            total - 1,
+            Math.floor(self.progress * total)
+          );
+          setActiveIndex(index);
         },
-      });
-
-      // Apple Wallet Style Stacking Logic (next card is always BEHIND active card)
-      cards.forEach((card, index) => {
-        // Set starting properties to establish the stack depth layers
-        gsap.set(card, {
-          zIndex: 50 - index, // earlier cards stay on top
-          yPercent: index * 10,
-          scale: 1 - index * 0.03,
-          opacity: index === 0 ? 1 : 0.85 - index * 0.1,
-          transformOrigin: 'center bottom',
-        });
-
-        if (index === 0) {
-          // Card 0 slides up and out of the stack
-          tl.to(card, {
-            yPercent: -120,
-            opacity: 0,
-            scale: 0.95,
-            duration: 1,
-            ease: 'power1.inOut',
-          }, 0);
-        } else {
-          // Card index > 0 starts waiting, promotes to active (center), then slides out
-          // Promotion:
-          tl.to(card, {
-            yPercent: 0,
-            scale: 1,
-            opacity: 1,
-            duration: 1,
-            ease: 'power1.inOut',
-          }, index - 1);
-
-          // Exit:
-          tl.to(card, {
-            yPercent: -120,
-            opacity: 0,
-            scale: 0.95,
-            duration: 1,
-            ease: 'power1.inOut',
-          }, index);
-        }
       });
     }, section);
 
     return () => ctx.revert();
   }, [reduceMotion]);
 
-  const fadeUp = (delay = 0) =>
-    reduceMotion
-      ? {}
-      : {
-          initial: { opacity: 0, y: 25 } as const,
-          whileInView: { opacity: 1, y: 0 } as const,
-          viewport: { once: true, amount: 0.2 },
-          transition: { duration: 0.7, ease: EASE, delay },
-        };
+  // Calculate card layout coordinates on desktop
+  const getCardStyle = (index: number) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return {}; // Handled by CSS on mobile
+    }
+
+    const total = founderMilestones.length;
+    const isActive = index === activeIndex;
+    const isPast = index < activeIndex;
+    const isFuture = index > activeIndex;
+
+    let x = 0;
+    let y = 0;
+    let scale = 1;
+    let opacity = 1;
+    let zIndex = 50 - index;
+
+    if (isActive) {
+      x = 0;
+      y = -40;
+      scale = 1.05;
+      opacity = 1;
+      zIndex = 100;
+    } else if (isPast) {
+      // Slid left and faded out
+      const diff = activeIndex - index;
+      x = -160 - diff * 30;
+      y = 20;
+      scale = 0.9;
+      opacity = 0.2;
+    } else if (isFuture) {
+      // Stacked horizontally to the right
+      const diff = index - activeIndex;
+      x = 100 + diff * 50;
+      y = diff * 8;
+      scale = 1 - diff * 0.03;
+      opacity = Math.max(0.3, 0.95 - diff * 0.15);
+    }
+
+    return {
+      transform: `translate3d(${x}px, ${y}px, 0) scale(${scale})`,
+      opacity,
+      zIndex,
+    };
+  };
 
   return (
     <section ref={sectionRef} className={styles.scene} id="story" aria-label="The Story of RS Mobile Corner">
-      <div ref={containerRef} className={styles.container}>
+      <div className={styles.container}>
         {/* Story Header */}
         <div className={styles.header}>
-          <motion.span className={styles.eyebrow} {...fadeUp(0)}>
-            Our Story
-          </motion.span>
+          <span className={styles.eyebrow}>Our Story</span>
           <h2 className={styles.sectionTitle}>
             From a spark to a trusted local brand.
           </h2>
-          <p className={styles.progressText}>
-            Chapter {activeIndex + 1} of {founderMilestones.length}
-          </p>
-          <div className={styles.scrollIndicatorMobile} aria-hidden="true">
-            <span>Scroll Down</span>
-            <div className={styles.chevron} />
+          <div className={styles.progressTracker}>
+            <span className={styles.progressIndex}>0{activeIndex + 1}</span>
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressFill}
+                style={{ width: `${((activeIndex + 1) / founderMilestones.length) * 100}%` }}
+              />
+            </div>
+            <span className={styles.progressTotal}>0{founderMilestones.length}</span>
           </div>
         </div>
 
         {/* Story Cards Stack Deck */}
-        <div ref={cardsRef} className={styles.deck}>
+        <div
+          ref={deckRef}
+          className={styles.deck}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           {founderMilestones.map((ms, i) => {
             const isActive = i === activeIndex;
-            const isPrevious = i < activeIndex;
-
-            let cardClass = styles.card;
-            if (isActive) cardClass += ` ${styles.activeCard}`;
-            else if (isPrevious) cardClass += ` ${styles.previousCard}`;
+            const cardStyle = getCardStyle(i);
 
             return (
-              <div key={ms.id} className={cardClass}>
+              <div
+                key={ms.id}
+                className={`${styles.card} ${isActive ? styles.activeCard : ''}`}
+                style={cardStyle}
+                onClick={() => setActiveIndex(i)}
+              >
                 <div className={styles.cardHeader}>
-                  <span className={styles.cardIndex}>0{i + 1}</span>
+                  <span className={styles.cardNum}>Chapter 0{i + 1}</span>
                   {ms.year ? (
                     <span className={styles.cardYear}>{ms.year}</span>
                   ) : (
@@ -178,6 +198,11 @@ export default function FounderStoryScene() {
               </div>
             );
           })}
+        </div>
+
+        {/* Mobile Swipe indicators */}
+        <div className={styles.swipeTip} aria-hidden="true">
+          <span>← Swipe Left / Right to Read →</span>
         </div>
       </div>
     </section>
