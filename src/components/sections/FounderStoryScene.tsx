@@ -14,31 +14,70 @@ if (typeof window !== 'undefined') {
 }
 
 const EASE = [0.16, 1, 0.3, 1] as const;
-const viewOnce = { once: true, amount: 0.3 as const };
 
 export default function FounderStoryScene() {
   const reduceMotion = useReducedMotion();
-  const timelineRef = useRef<HTMLDivElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
-  const [progressHeight, setProgressHeight] = useState(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  // Scroll-driven progress line
   useEffect(() => {
-    const timeline = timelineRef.current;
-    const progress = progressRef.current;
-    if (!timeline || !progress || reduceMotion) return;
+    const section = sectionRef.current;
+    const container = containerRef.current;
+    const cardsContainer = cardsRef.current;
+    if (!section || !container || !cardsContainer || reduceMotion) return;
 
-    const trigger = ScrollTrigger.create({
-      trigger: timeline,
-      start: 'top 60%',
-      end: 'bottom 40%',
-      scrub: true,
-      onUpdate: (self) => {
-        setProgressHeight(self.progress * 100);
-      },
-    });
+    const cards = gsap.utils.toArray<HTMLElement>(cardsContainer.children);
+    if (cards.length === 0) return;
 
-    return () => trigger.kill();
+    const totalCards = cards.length;
+    const scrollHeight = window.innerHeight * 1.5 * totalCards;
+
+    const ctx = gsap.context(() => {
+      // Pinned ScrollTrigger for the story deck container
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: `+=${scrollHeight}`,
+          pin: true,
+          scrub: 1,
+          onUpdate: (self) => {
+            const index = Math.min(
+              totalCards - 1,
+              Math.floor(self.progress * totalCards)
+            );
+            setActiveIndex(index);
+          },
+        },
+      });
+
+      // Animate cards based on active scroll state
+      cards.forEach((card, index) => {
+        if (index === 0) return; // First card is active at start
+
+        // Scrubbing timeline for each card's entrance/promotion
+        timeline.fromTo(
+          card,
+          {
+            yPercent: 100,
+            scale: 0.92,
+            opacity: 0,
+          },
+          {
+            yPercent: 0,
+            scale: 1,
+            opacity: 1,
+            duration: 1,
+            ease: 'power2.out',
+          },
+          index - 0.75 // overlapping timing
+        );
+      });
+    }, section);
+
+    return () => ctx.revert();
   }, [reduceMotion]);
 
   const fadeUp = (delay = 0) =>
@@ -47,89 +86,83 @@ export default function FounderStoryScene() {
       : {
           initial: { opacity: 0, y: 30 } as const,
           whileInView: { opacity: 1, y: 0 } as const,
-          viewport: viewOnce,
-          transition: { duration: 0.7, ease: EASE, delay },
+          viewport: { once: true, amount: 0.2 },
+          transition: { duration: 0.8, ease: EASE, delay },
         };
 
   return (
-    <section className={styles.scene} id="story" aria-label="The Story of RS Mobile Corner">
-      {/* Section Header */}
-      <div className={styles.header}>
-        <motion.span className={styles.eyebrow} {...fadeUp(0)}>
-          Our Journey
-        </motion.span>
-        <motion.h2 className={styles.sectionTitle} {...fadeUp(0.1)}>
-          From spark to trusted local brand.
-        </motion.h2>
-      </div>
-
-      {/* Timeline */}
-      <div ref={timelineRef} className={styles.timeline}>
-        {/* Progress Line */}
-        <div className={styles.progressLine} aria-hidden="true">
-          <div
-            ref={progressRef}
-            className={styles.progressFill}
-            style={{ height: `${progressHeight}%` }}
-          />
+    <section ref={sectionRef} className={styles.scene} id="story" aria-label="The Story of RS Mobile Corner">
+      <div ref={containerRef} className={styles.container}>
+        {/* Story Header */}
+        <div className={styles.header}>
+          <motion.span className={styles.eyebrow} {...fadeUp(0)}>
+            Our Story
+          </motion.span>
+          <h2 className={styles.sectionTitle}>
+            From a spark to a trusted local brand.
+          </h2>
+          <p className={styles.progressText}>
+            Chapter {activeIndex + 1} of {founderMilestones.length}
+          </p>
+          <div className={styles.scrollIndicatorMobile} aria-hidden="true">
+            <span>Scroll Down to Read</span>
+            <div className={styles.chevron} />
+          </div>
         </div>
 
-        {founderMilestones.map((ms, i) => (
-          <motion.div
-            key={ms.id}
-            className={styles.milestone}
-            {...fadeUp(0.05 * i)}
-          >
-            {/* Center Node */}
-            <div className={styles.milestoneNode} aria-hidden="true">
-              {ms.accent}
-            </div>
+        {/* Story Cards Stack Deck */}
+        <div ref={cardsRef} className={styles.deck}>
+          {founderMilestones.map((ms, i) => {
+            const isActive = i === activeIndex;
+            const isPrevious = i < activeIndex;
+            const isNext = i > activeIndex;
 
-            {/* Content */}
-            <div className={styles.milestoneContent}>
-              {ms.year && (
-                <span className={styles.milestoneYear}>{ms.year}</span>
-              )}
-              <h3 className={styles.milestoneTitle}>{ms.title}</h3>
-              <p className={styles.milestoneDesc}>{ms.description}</p>
-            </div>
+            let cardClass = styles.card;
+            if (isActive) cardClass += ` ${styles.activeCard}`;
+            else if (isPrevious) cardClass += ` ${styles.previousCard}`;
+            else if (isNext) cardClass += ` ${styles.nextCard}`;
 
-            {/* Visual Card */}
-            <div className={styles.milestoneVisual}>
-              <div className={styles.visualCard}>
-                {ms.id === 'milestone' ? (
-                  <AnimatedCounter
-                    target={500}
-                    suffix="+"
-                    className={styles.visualNumber}
-                    duration={2.5}
-                    delay={0.2}
-                  />
-                ) : ms.id === 'opening' ? (
-                  <span className={styles.visualNumber}>{business.established}</span>
-                ) : ms.id === 'today' ? (
-                  <AnimatedCounter
-                    target={6}
-                    suffix="+"
-                    prefix=""
-                    className={styles.visualNumber}
-                    duration={1.5}
-                  />
-                ) : (
-                  <span className={styles.visualEmoji}>{ms.accent}</span>
-                )}
+            return (
+              <div key={ms.id} className={cardClass}>
+                <div className={styles.cardHeader}>
+                  <span className={styles.cardIndex}>0{i + 1}</span>
+                  {ms.year ? (
+                    <span className={styles.cardYear}>{ms.year}</span>
+                  ) : (
+                    <span className={styles.cardIcon}>{ms.accent}</span>
+                  )}
+                </div>
+
+                <div className={styles.cardBody}>
+                  <h3 className={styles.cardTitle}>{ms.title}</h3>
+                  <p className={styles.cardDesc}>{ms.description}</p>
+                </div>
+
+                <div className={styles.cardVisual}>
+                  {ms.id === 'milestone' ? (
+                    <div className={styles.counterWrap}>
+                      <AnimatedCounter target={500} suffix="+" className={styles.counterNum} />
+                      <span className={styles.counterLabel}>Phones Repaired</span>
+                    </div>
+                  ) : ms.id === 'opening' ? (
+                    <div className={styles.counterWrap}>
+                      <span className={styles.counterNum}>{business.established}</span>
+                      <span className={styles.counterLabel}>Shop Opened</span>
+                    </div>
+                  ) : ms.id === 'today' ? (
+                    <div className={styles.counterWrap}>
+                      <AnimatedCounter target={6} suffix="+" className={styles.counterNum} />
+                      <span className={styles.counterLabel}>Years of Trust</span>
+                    </div>
+                  ) : (
+                    <span className={styles.visualEmoji}>{ms.accent}</span>
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            );
+          })}
+        </div>
       </div>
-
-      {/* Bottom CTA */}
-      <motion.div className={styles.bottomCta} {...fadeUp(0.1)}>
-        <p className={styles.bottomLine}>
-          &ldquo;The journey continues — one repair at a time.&rdquo;
-        </p>
-      </motion.div>
     </section>
   );
 }

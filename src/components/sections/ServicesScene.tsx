@@ -12,187 +12,171 @@ if (typeof window !== 'undefined') {
 
 const SERVICES = [
   {
+    id: 'display',
     icon: <DisplayIcon />,
-    title: 'Display & Screen Repair',
+    title: 'Display & Screen',
     description:
-      'Original and A-Grade display replacements for iPhone, Samsung, and all major brands. Clear, bright, and responsive — just like the day you bought it.',
+      'Original and A-Grade display replacements for iPhone, Samsung, and all major brands. Clear, bright, and responsive.',
     features: ['Original OEM Displays', 'A-Grade Quality Panels', 'Face Unlock Compatible'],
     time: '≈ 15 Min',
+    warranty: 'Up to 6 Months Warranty',
   },
   {
+    id: 'battery',
     icon: <BatteryIcon />,
-    title: 'Battery Replacement',
+    title: 'Battery Renewal',
     description:
-      "Genuine battery cells with 3-month warranty. Restore your phone's full day battery life quickly and affordably.",
-    features: ['Original Capacity Cells', '3 Months Warranty', '≈ 15 Min Turnaround'],
+      "Genuine battery cells with premium health monitoring. Restore your phone's full day battery life quickly and safely.",
+    features: ['Original Capacity Cells', 'Health Stats Verified', 'Overcharge Protection'],
     time: '≈ 15 Min',
+    warranty: '3 Months Replacement Warranty',
   },
   {
+    id: 'charging',
     icon: <ChargingIcon />,
-    title: 'Charging & Power Issues',
+    title: 'Charging Port',
     description:
-      'From charging port cleaning to Charging IC and Power IC replacement — all charging faults diagnosed and fixed.',
-    features: ['Charging Port Repair', 'Charging IC Replacement', 'Power IC Level Repair'],
+      'From simple charging port lint cleaning to Charging IC and micro-soldering level repair.',
+    features: ['Port Cleaning & Repair', 'Charging IC Replacements', 'Type-C & Lightning Jacks'],
     time: '≈ 15 Min',
+    warranty: '3 Months Warranty',
   },
   {
+    id: 'motherboard',
     icon: <BoardIcon />,
-    title: 'Motherboard & IC Repairs',
+    title: 'Motherboard Surgery',
     description:
-      'Complex motherboard-level repairs including micro-soldering, IC chip replacement, dead phone recovery, and water damage restoration.',
-    features: ['Dead Phone Recovery', 'Water Damage Repair', 'IC & Chip Replacement'],
+      'Complex micro-soldering repairs including dead phone recovery, network IC swap, and CPU reballing.',
+    features: ['Micro-Soldering Support', 'Network IC Swap', 'Dead Device Recovery'],
     time: '≈ 1 Hour+',
+    warranty: 'Diagnosed Case-by-Case',
   },
   {
+    id: 'camera',
+    icon: <CameraIcon />,
+    title: 'Camera & Sensors',
+    description:
+      'Replacing cracked camera glass lenses, fixing autofocus failures, and restoring front sensor functions.',
+    features: ['Camera Lens Replacement', 'Autofocus Recovery', 'Face ID Swaps'],
+    time: '≈ 30 Min',
+    warranty: '3 Months Warranty',
+  },
+  {
+    id: 'software',
     icon: <SoftwareIcon />,
     title: 'Software & Flash',
     description:
-      'Software problems, boot loops, factory flash, and data recovery. We inform you upfront about any data risks before starting.',
-    features: ['Flash & Software Fix', 'Boot Loop Recovery', 'Data Recovery (Where Possible)'],
-    time: '≈ 1 Hour',
+      'Fixing boot loops, bricked firmware issues, unlocking, and performing secure memory backup.',
+    features: ['Firmware Flash', 'Boot Loop Fix', 'Secure Backup attempts'],
+    time: '≈ 45 Min',
+    warranty: 'Software support included',
   },
   {
-    icon: <CameraIcon />,
-    title: 'Camera & Network',
-    description:
-      'Camera issues, network problems, speaker & microphone faults, button repairs, and Face Unlock diagnosis.',
-    features: ['Camera Repair', 'Network Issues', 'Speaker & Mic Repair'],
-    time: '≈ 30 Min',
-  },
-  {
+    id: 'water',
     icon: <WaterIcon />,
-    title: 'Water Damage Recovery',
+    title: 'Water Damage',
     description:
-      'Specialized water damage treatment with ultrasonic cleaning, component-level drying, and IC replacement when needed.',
-    features: ['Ultrasonic Cleaning', 'IC Level Repair', 'Full Recovery Attempt'],
-    time: '≈ 1 Hour+',
+      'Ultrasonic bath component-level cleaning, corrosion removal, and power circuit diagnostic recovery.',
+    features: ['Ultrasonic Cleaning', 'Corrosion Shielding', 'Short Circuit Diagnosis'],
+    time: '≈ 2 Hours+',
+    warranty: 'Restoration assurance',
   },
-  {
-    icon: <SpeakerIcon />,
-    title: 'Speaker & Mic Fix',
-    description:
-      'Muffled audio, no sound, microphone not working during calls — all audio issues diagnosed and repaired.',
-    features: ['Speaker Replacement', 'Mic Repair', 'Audio IC Fix'],
-    time: '≈ 20 Min',
-  },
-];
-
-const REPAIR_TIMES = [
-  { service: 'Display Replacement', time: '≈ 15 Min' },
-  { service: 'Battery Replacement', time: '≈ 15 Min' },
-  { service: 'Charging Port', time: '≈ 15 Min' },
-  { service: 'Software / Flash', time: '≈ 1 Hour' },
-  { service: 'Water Damage', time: '≈ 1 Hour+' },
-  { service: 'Initial Diagnosis', time: 'Free & Quick' },
-];
-
-const WARRANTY = [
-  { item: 'Battery', warranty: '3 Months Warranty' },
-  { item: 'Display', warranty: 'Depends on grade selected' },
-  { item: 'Accessories', warranty: 'Brand specific' },
 ];
 
 const EASE = [0.16, 1, 0.3, 1] as const;
-const viewOnce = { once: true, amount: 0.2 as const };
 
 export default function ServicesScene() {
   const reduceMotion = useReducedMotion();
   const [activeIndex, setActiveIndex] = useState(0);
   const deckRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
-  // Card positioning: fan layout
+  // Dynamic poker card fan layout styling
   const getCardTransform = (index: number, active: number) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      return {}; // Handled by CSS flex layout on mobile
+    }
+
+    const total = SERVICES.length;
+    const isActive = index === active;
     const offset = index - active;
     const absOffset = Math.abs(offset);
-    const isActive = offset === 0;
 
     if (isActive) {
       return {
-        transform: 'translateX(0) translateY(-12px) rotateY(0deg) scale(1)',
-        zIndex: 10,
+        transform: 'translateX(0) translateY(-40px) rotate(0deg) scale(1.15)',
+        zIndex: 40,
         opacity: 1,
-        filter: 'blur(0px)',
       };
     }
 
     const direction = offset > 0 ? 1 : -1;
-    const translateX = direction * (60 + absOffset * 30);
-    const translateY = absOffset * 8;
-    const rotateY = direction * -4;
+    const translateX = direction * (70 + absOffset * 50) + (index - (total - 1) / 2) * 12;
+    const translateY = absOffset * 15;
+    const rotate = (index - (total - 1) / 2) * 5 + direction * 4;
     const scale = 1 - absOffset * 0.06;
-    const opacity = Math.max(0.3, 1 - absOffset * 0.25);
-    const blur = Math.min(absOffset * 1.5, 3);
+    const opacity = Math.max(0.3, 1 - absOffset * 0.2);
 
     return {
-      transform: `translateX(${translateX}px) translateY(${translateY}px) rotateY(${rotateY}deg) scale(${scale})`,
-      zIndex: 10 - absOffset,
+      transform: `translateX(${translateX}px) translateY(${translateY}px) rotate(${rotate}deg) scale(${scale})`,
+      zIndex: 30 - absOffset,
       opacity,
-      filter: `blur(${blur}px)`,
     };
   };
 
-  // Scroll-driven card switching
+  // Pinned section to scroll-scrub services active state
   useEffect(() => {
-    if (reduceMotion) return;
+    const section = sectionRef.current;
+    if (!section || reduceMotion || (typeof window !== 'undefined' && window.innerWidth < 768)) return;
 
-    const trigger = ScrollTrigger.create({
-      trigger: deckRef.current,
-      start: 'top 40%',
-      end: 'bottom 60%',
-      scrub: 0.5,
-      onUpdate: (self) => {
-        const newIndex = Math.min(
-          SERVICES.length - 1,
-          Math.floor(self.progress * SERVICES.length)
-        );
-        setActiveIndex(newIndex);
-      },
-    });
+    const scrollHeight = window.innerHeight * 1.2 * SERVICES.length;
 
-    return () => trigger.kill();
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: `+=${scrollHeight}`,
+        pin: true,
+        scrub: 0.5,
+        onUpdate: (self) => {
+          const index = Math.min(
+            SERVICES.length - 1,
+            Math.floor(self.progress * SERVICES.length)
+          );
+          setActiveIndex(index);
+        },
+      });
+    }, section);
+
+    return () => ctx.revert();
   }, [reduceMotion]);
 
-  const fadeUp = (delay = 0) =>
-    reduceMotion
-      ? {}
-      : {
-          initial: { opacity: 0, y: 30 } as const,
-          whileInView: { opacity: 1, y: 0 } as const,
-          viewport: viewOnce,
-          transition: { duration: 0.7, ease: EASE, delay },
-        };
-
   return (
-    <section className={styles.scene} id="services" aria-label="Repair Services">
-      {/* Header */}
-      <div className={styles.header}>
-        <motion.span className={styles.eyebrow} {...fadeUp(0)}>
-          What We Fix
-        </motion.span>
-        <motion.h2 className={styles.heading} {...fadeUp(0.05)}>
-          Complete Mobile Repair Services
-        </motion.h2>
-        <motion.p className={styles.subtext} {...fadeUp(0.1)}>
-          From screen cracks to motherboard surgery — RS Mobile Corner handles every repair. Every job is personally done by Rahim Bhai.
-        </motion.p>
-      </div>
+    <section ref={sectionRef} className={styles.scene} id="services" aria-label="Repair Services">
+      <div className={styles.container}>
+        {/* Header */}
+        <div className={styles.header}>
+          <span className={styles.eyebrow}>Services</span>
+          <h2 className={styles.heading}>The Stack Repair Deck</h2>
+          <p className={styles.subtext}>
+            Tap or scroll to examine Rahim Bhai&apos;s primary specialties.
+          </p>
+        </div>
 
-      {/* Card Deck */}
-      <div className={styles.deckContainer} ref={deckRef}>
-        <div className={styles.deck}>
+        {/* Fanned Poker stacked card deck */}
+        <div ref={deckRef} className={styles.deck}>
           {SERVICES.map((service, i) => {
-            const cardStyle = getCardTransform(i, activeIndex);
             const isActive = i === activeIndex;
+            const cardStyle = getCardTransform(i, activeIndex);
 
             return (
               <div
-                key={i}
-                className={`${styles.card} ${isActive ? styles.active : ''}`}
+                key={service.id}
+                className={`${styles.card} ${isActive ? styles.activeCard : ''}`}
                 style={cardStyle}
                 onClick={() => setActiveIndex(i)}
                 role="button"
                 tabIndex={0}
-                aria-label={`${service.title} - click to view details`}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -200,86 +184,64 @@ export default function ServicesScene() {
                   }
                 }}
               >
-                <div className={styles.cardIcon}>{service.icon}</div>
-                <h3 className={styles.cardTitle}>{service.title}</h3>
-                {isActive && (
-                  <>
-                    <p className={styles.cardDescription}>{service.description}</p>
-                    <div className={styles.cardFeatures}>
-                      {service.features.map((f, j) => (
-                        <span key={j} className={styles.featureTag}>{f}</span>
-                      ))}
-                    </div>
-                    <div className={styles.cardTime}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.iconBox}>{service.icon}</div>
+                  <span className={styles.index}>0{i + 1}</span>
+                </div>
+
+                <div className={styles.cardBody}>
+                  <h3 className={styles.cardTitle}>{service.title}</h3>
+                  <p className={styles.cardDesc}>{service.description}</p>
+                </div>
+
+                {/* Details revealed on active promotion */}
+                <div className={styles.cardFooter}>
+                  <div className={styles.tagWrap}>
+                    {service.features.map((feature, idx) => (
+                      <span key={idx} className={styles.tag}>
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+                  <div className={styles.metaInfo}>
+                    <div className={styles.metaItem}>
                       <ClockIcon />
                       <span>{service.time}</span>
                     </div>
-                  </>
-                )}
+                    <div className={styles.metaItem}>
+                      <ShieldIcon />
+                      <span>{service.warranty}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             );
           })}
         </div>
 
-        {/* Navigation Dots */}
-        <div className={styles.deckNav} aria-label="Service navigation">
+        {/* Manual Indicator Dots */}
+        <div className={styles.dotsWrap} aria-label="Services Navigation">
           {SERVICES.map((_, i) => (
             <button
               key={i}
-              className={`${styles.deckDot} ${i === activeIndex ? styles.activeDot : ''}`}
+              className={`${styles.dot} ${i === activeIndex ? styles.activeDot : ''}`}
               onClick={() => setActiveIndex(i)}
-              aria-label={`Go to service ${i + 1}`}
+              aria-label={`Go to service chapter ${i + 1}`}
             />
           ))}
         </div>
-      </div>
-
-      {/* Info Cards */}
-      <motion.div className={styles.infoSection} {...fadeUp(0.1)}>
-        <div className={styles.infoCard}>
-          <h3 className={styles.infoCardTitle}>Repair Turnaround</h3>
-          {REPAIR_TIMES.map((row, i) => (
-            <div key={i} className={styles.timeRow}>
-              <span className={styles.timeService}>{row.service}</span>
-              <span className={styles.timeBadge}>{row.time}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className={styles.infoCard}>
-          <h3 className={styles.infoCardTitle}>Honest Warranty</h3>
-          <p className={styles.warrantyNote}>
-            No fake promises — just clear, upfront terms.
-          </p>
-          {WARRANTY.map((w, i) => (
-            <div key={i} className={styles.warrantyRow}>
-              <span className={styles.warrantyItem}>{w.item}</span>
-              <span className={styles.warrantyValue}>{w.warranty}</span>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Accent Bar */}
-      <div className={styles.accentBar} aria-hidden="true">
-        <div className={styles.accentLine} />
-        <span className={styles.accentText}>
-          Open All 7 Days · 9:30 AM – 9:30 PM · Emergency Repairs Available
-        </span>
-        <div className={styles.accentLine} />
       </div>
     </section>
   );
 }
 
-/* ── SVG Icons ── */
+/* ── Custom SVGs ── */
 
 function DisplayIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="5" y="2" width="14" height="20" rx="2" />
-      <line x1="9" y1="7" x2="15" y2="7" />
-      <circle cx="12" cy="18" r="0.5" fill="currentColor" stroke="none" />
+      <line x1="12" y1="18" x2="12" y2="18" strokeWidth="3" />
     </svg>
   );
 }
@@ -289,7 +251,6 @@ function BatteryIcon() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="2" y="7" width="18" height="10" rx="2" />
       <line x1="22" y1="11" x2="22" y2="13" strokeWidth="2" />
-      <line x1="6" y1="12" x2="12" y2="12" />
     </svg>
   );
 }
@@ -297,7 +258,7 @@ function BatteryIcon() {
 function ChargingIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+      <path d="M5 18H19M12 4V14M12 14L9 11M12 14L15 11" />
     </svg>
   );
 }
@@ -305,17 +266,10 @@ function ChargingIcon() {
 function BoardIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
       <rect x="9" y="9" width="6" height="6" rx="1" />
-      <path d="M9 4v2M15 4v2M9 18v2M15 18v2M4 9h2M4 15h2M18 9h2M18 15h2" />
-    </svg>
-  );
-}
-
-function SoftwareIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polyline points="16 18 22 12 16 6" />
-      <polyline points="8 6 2 12 8 18" />
+      <line x1="9" y1="1" x2="9" y2="4" />
+      <line x1="15" y1="1" x2="15" y2="4" />
     </svg>
   );
 }
@@ -329,19 +283,19 @@ function CameraIcon() {
   );
 }
 
-function WaterIcon() {
+function SoftwareIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
     </svg>
   );
 }
 
-function SpeakerIcon() {
+function WaterIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-      <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" />
+      <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
     </svg>
   );
 }
@@ -351,6 +305,14 @@ function ClockIcon() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <circle cx="12" cy="12" r="10" />
       <polyline points="12 6 12 12 16 14" />
+    </svg>
+  );
+}
+
+function ShieldIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
     </svg>
   );
 }

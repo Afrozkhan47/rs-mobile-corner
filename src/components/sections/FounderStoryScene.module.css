@@ -1,16 +1,29 @@
 .scene {
   position: relative;
-  padding: var(--space-section) 0;
-  overflow: hidden;
+  width: 100%;
   background: var(--color-bg);
 }
 
-/* ── Section Header ── */
+.container {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  align-items: center;
+  padding: 0 var(--section-padding-x);
+  gap: 6rem;
+  max-width: var(--width-max);
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Left Side: Header ── */
 
 .header {
-  text-align: center;
-  padding: 0 var(--section-padding-x);
-  margin-bottom: clamp(3rem, 8vh, 6rem);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
 }
 
 .eyebrow {
@@ -20,7 +33,6 @@
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   color: var(--color-amber);
-  margin-bottom: 1rem;
 }
 
 .sectionTitle {
@@ -29,230 +41,234 @@
   font-weight: 400;
   line-height: var(--leading-tight);
   color: var(--color-text-primary);
-  max-width: 600px;
-  margin: 0 auto;
 }
 
-/* ── Timeline Container ── */
+.progressText {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+  font-family: var(--font-heading);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  margin-top: 1rem;
+}
 
-.timeline {
+.scrollIndicatorMobile {
+  display: none;
+}
+
+/* ── Right Side: Stacked Card Deck ── */
+
+.deck {
   position: relative;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 var(--section-padding-x);
-}
-
-/* ── Vertical Progress Line ── */
-
-.progressLine {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--color-border);
-  transform: translateX(-50%);
-  z-index: 0;
-}
-
-.progressFill {
-  position: absolute;
-  left: 0;
-  top: 0;
   width: 100%;
-  height: 0%;
-  background: linear-gradient(to bottom, var(--color-amber), rgba(201, 169, 97, 0.3));
-  border-radius: 1px;
-  transition: height 0.1s linear;
-}
-
-/* ── Milestone Item ── */
-
-.milestone {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 60px 1fr;
-  align-items: center;
-  gap: 0;
-  padding: clamp(2rem, 4vh, 4rem) 0;
-  z-index: 1;
-}
-
-.milestone:nth-child(even) .milestoneContent {
-  grid-column: 3;
-  text-align: left;
-  padding-left: 2rem;
-}
-
-.milestone:nth-child(even) .milestoneVisual {
-  grid-column: 1;
-  grid-row: 1;
-  justify-self: end;
-  padding-right: 2rem;
-}
-
-.milestone:nth-child(odd) .milestoneContent {
-  grid-column: 1;
-  text-align: right;
-  padding-right: 2rem;
-}
-
-.milestone:nth-child(odd) .milestoneVisual {
-  grid-column: 3;
-  grid-row: 1;
-  justify-self: start;
-  padding-left: 2rem;
-}
-
-/* ── Center Node ── */
-
-.milestoneNode {
-  grid-column: 2;
-  grid-row: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border-accent);
-  box-shadow: 0 0 24px rgba(201, 169, 97, 0.08);
-  font-size: 1.2rem;
-  z-index: 2;
+  max-width: 440px;
+  height: 480px;
   justify-self: center;
 }
 
-/* ── Content Block ── */
-
-.milestoneContent {
-  grid-row: 1;
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 3rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 16px 64px rgba(26, 23, 20, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform-origin: center bottom;
+  will-change: transform, opacity, filter;
+  transition:
+    box-shadow 0.6s var(--ease-out-expo),
+    filter 0.6s var(--ease-out-expo);
 }
 
-.milestoneYear {
-  display: inline-block;
-  font-size: var(--text-micro);
-  font-weight: 600;
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
+/* Depth States */
+.activeCard {
+  z-index: 20;
+  box-shadow: 0 35px 90px rgba(26, 23, 20, 0.09);
+  filter: blur(0px);
+}
+
+.previousCard {
+  z-index: 10;
+  transform: translateY(-80px) scale(0.92) !important;
+  opacity: 0.35 !important;
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.nextCard {
+  z-index: 5;
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+/* Inside Card Styling */
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.cardIndex {
+  font-family: var(--font-heading);
+  font-size: var(--text-caption);
+  color: var(--color-text-subtle);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wider);
+}
+
+.cardYear {
+  font-family: var(--font-editorial);
+  font-size: var(--text-heading);
   color: var(--color-amber);
-  margin-bottom: 0.5rem;
 }
 
-.milestoneTitle {
+.cardIcon {
+  font-size: 1.5rem;
+}
+
+.cardBody {
+  margin-top: 1.5rem;
+  flex: 1;
+}
+
+.cardTitle {
   font-family: var(--font-heading);
   font-size: var(--text-heading);
   font-weight: 600;
-  line-height: var(--leading-snug);
   color: var(--color-text-primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-.milestoneDesc {
+.cardDesc {
   font-size: var(--text-body);
   line-height: var(--leading-relaxed);
   color: var(--color-text-secondary);
-  max-width: 360px;
 }
 
-.milestone:nth-child(odd) .milestoneDesc {
-  margin-left: auto;
-}
-
-/* ── Visual Block ── */
-
-.milestoneVisual {
-  grid-row: 1;
-}
-
-.visualCard {
-  width: 100%;
-  max-width: 200px;
-  aspect-ratio: 1;
-  border-radius: var(--radius-lg);
-  background: var(--glass-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--glass-border);
+.cardVisual {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-md);
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-top: auto;
 }
 
-.visualNumber {
+.counterWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.counterNum {
   font-family: var(--font-editorial);
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(3rem, 6vw, 4.5rem);
   font-weight: 400;
   color: var(--color-amber);
-  letter-spacing: var(--tracking-tighter);
+  line-height: 1;
+}
+
+.counterLabel {
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
 }
 
 .visualEmoji {
-  font-size: clamp(2rem, 4vw, 3rem);
-}
-
-/* ── Bottom CTA ── */
-
-.bottomCta {
-  text-align: center;
-  padding: clamp(3rem, 6vh, 5rem) var(--section-padding-x) 0;
-}
-
-.bottomLine {
-  font-family: var(--font-editorial);
-  font-size: var(--text-subhead);
-  font-style: italic;
-  color: var(--color-text-muted);
-  margin-bottom: 1.5rem;
+  font-size: 3rem;
 }
 
 /* ============================================
-   Responsive
+   Mobile layout (Responsive)
    ============================================ */
 
 @media (max-width: 768px) {
-  .timeline {
-    padding: 0 var(--section-padding-x) 0 calc(var(--section-padding-x) + 24px);
+  .container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 3rem;
+    height: 100vh;
+    padding: calc(var(--nav-height) + 1rem) 1.5rem 2rem;
+    justify-content: center;
   }
 
-  .progressLine {
-    left: var(--section-padding-x);
-    transform: none;
+  .header {
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
   }
 
-  .milestone {
-    grid-template-columns: 40px 1fr;
-    gap: 0;
+  .sectionTitle {
+    font-size: clamp(2rem, 8vw, 2.5rem);
   }
 
-  .milestoneNode {
-    grid-column: 1;
-    width: 36px;
-    height: 36px;
-    font-size: 1rem;
+  .deck {
+    height: 380px;
+    max-width: 100%;
+    width: 100%;
+    margin-top: 0;
   }
 
-  .milestone:nth-child(even) .milestoneContent,
-  .milestone:nth-child(odd) .milestoneContent {
-    grid-column: 2;
-    text-align: left;
-    padding-left: 1.25rem;
-    padding-right: 0;
+  .card {
+    padding: 2rem;
   }
 
-  .milestone:nth-child(odd) .milestoneDesc {
-    margin-left: 0;
+  .cardBody {
+    margin-top: 0.75rem;
   }
 
-  .milestone:nth-child(even) .milestoneVisual,
-  .milestone:nth-child(odd) .milestoneVisual {
-    display: none;
+  .cardTitle {
+    font-size: var(--text-subhead);
+    margin-bottom: 0.5rem;
   }
 
-  .milestoneTitle {
-    font-size: clamp(1.1rem, 4vw, 1.4rem);
+  .cardDesc {
+    font-size: var(--text-caption);
   }
+
+  .counterNum {
+    font-size: 2.8rem;
+  }
+
+  .previousCard {
+    transform: translateY(-50px) scale(0.92) !important;
+  }
+
+  .scrollIndicatorMobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    color: var(--color-text-subtle);
+    margin-top: 0.5rem;
+  }
+
+  .chevron {
+    width: 8px;
+    height: 8px;
+    border-right: 1px solid var(--color-text-subtle);
+    border-bottom: 1px solid var(--color-text-subtle);
+    transform: rotate(45deg);
+    animation: chevronDown 1.5s infinite;
+  }
+}
+
+@keyframes chevronDown {
+  0% { transform: translate(0, -4px) rotate(45deg); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: translate(0, 4px) rotate(45deg); opacity: 0; }
 }

@@ -2,94 +2,89 @@
 
 import React from 'react';
 import Section from '@/components/layout/Section';
-import ScrollReveal from '@/components/animation/ScrollReveal';
 import { motion } from 'framer-motion';
 import styles from './AccessoriesScene.module.css';
 
 const CATEGORIES = [
   {
-    emoji: '⚡',
-    label: 'Chargers & Cables',
-    items: ['Fast Chargers', 'Type-C Cables', 'Lightning Cables', 'Car Chargers', 'Adapters', 'OTG'],
+    emoji: '🔌',
+    label: 'Chargers & Power',
+    items: ['Fast Chargers', 'Type-C Power Delivery', 'Lightning Cables', 'Power Banks', 'Wireless Pads'],
   },
   {
     emoji: '🛡️',
-    label: 'Protection',
-    items: ['Tempered Glass', 'Cases & Back Covers', 'Screen Guards'],
-  },
-  {
-    emoji: '🔋',
-    label: 'Power',
-    items: ['Power Banks', 'Wireless Chargers'],
+    label: 'Shield Protection',
+    items: ['Tempered Glass', 'Frosted Back Covers', 'Privacy Protectors', 'Camera Glass Seals'],
   },
   {
     emoji: '🎧',
-    label: 'Audio',
-    items: ['Bluetooth Earbuds', 'Neckbands', 'Bluetooth Speakers'],
-  },
-  {
-    emoji: '⌚',
-    label: 'Wearables',
-    items: ['Smart Watches', 'Fitness Bands'],
+    label: 'Premium Audio',
+    items: ['Hi-Fi Earbuds', 'Noise Neckbands', 'Mini Bluetooth Speakers'],
   },
   {
     emoji: '💾',
     label: 'Storage & Mounts',
-    items: ['Memory Cards', 'Pen Drives', 'Mobile Holders'],
+    items: ['Memory Cards', 'High-Speed Pen Drives', 'Magnetic Car Mounts'],
   },
 ];
 
-const BRANDS = ['Apple', 'Samsung', 'OnePlus', 'Realme', 'Boat', 'JBL', 'Noise', 'Fire-Boltt', 'Ambrane'];
+const BRANDS = ['Apple', 'Samsung', 'OnePlus', 'Realme', 'Boat', 'JBL', 'Noise', 'Ambrane'];
 
 export default function AccessoriesScene() {
   return (
-    <Section variant="default">
+    <Section variant="default" id="accessories">
       <div className={styles.inner}>
         {/* Header */}
-        <ScrollReveal direction="up">
-          <div className={styles.header}>
-            <span className={styles.eyebrow}>Premium Accessories</span>
-            <h2 className={styles.heading}>
-              Everything Your Phone Needs.
-            </h2>
-            <p className={styles.subtext}>
-              From protective cases to premium audio — we stock a wide range of genuine accessories from top brands. All in one shop.
-            </p>
-          </div>
-        </ScrollReveal>
+        <div className={styles.header}>
+          <span className={styles.eyebrow}>Selected Stock</span>
+          <h2 className={styles.heading}>The Premium Accessories Shelves</h2>
+          <p className={styles.subtext}>
+            Personally curated, high-quality accessories from top-tier brands.
+          </p>
+        </div>
 
-        {/* Category Cards */}
-        <div className={styles.grid}>
+        {/* Visual Shelving Layout */}
+        <div className={styles.shelfGrid}>
           {CATEGORIES.map((cat, i) => (
-            <ScrollReveal key={i} direction="up" delay={i * 0.06} stagger={0}>
-              <motion.div
-                className={styles.categoryCard}
-                whileHover={{ y: -4, boxShadow: '0 12px 32px rgba(231, 180, 74, 0.08)' }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <span className={styles.categoryEmoji}>{cat.emoji}</span>
-                <h3 className={styles.categoryLabel}>{cat.label}</h3>
-                <ul className={styles.itemList}>
+            <div key={i} className={styles.shelfUnit}>
+              <div className={styles.shelfInfo}>
+                <span className={styles.shelfEmoji}>{cat.emoji}</span>
+                <h3 className={styles.shelfTitle}>{cat.label}</h3>
+              </div>
+
+              {/* Wooden-textured/Amber minimal shelf line */}
+              <div className={styles.shelfDisplay}>
+                <div className={styles.itemsRow}>
                   {cat.items.map((item, j) => (
-                    <li key={j} className={styles.itemTag}>{item}</li>
+                    <motion.div
+                      key={j}
+                      className={styles.productPill}
+                      whileHover={{ y: -8, scale: 1.04 }}
+                      transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                    >
+                      {item}
+                    </motion.div>
                   ))}
-                </ul>
-              </motion.div>
-            </ScrollReveal>
+                </div>
+                <div className={styles.woodLine} />
+              </div>
+            </div>
           ))}
         </div>
 
-        {/* Brands */}
-        <ScrollReveal direction="up" delay={0.1}>
-          <div className={styles.brandsRow}>
-            <span className={styles.brandsLabel}>Available Brands</span>
-            <div className={styles.brands}>
-              {BRANDS.map((brand, i) => (
-                <span key={i} className={styles.brandChip}>{brand}</span>
+        {/* Brand Row Marquee */}
+        <div className={styles.brandsWrapper}>
+          <span className={styles.brandsTitle}>Curated Brands</span>
+          <div className={styles.marquee}>
+            <div className={styles.marqueeInner}>
+              {[...BRANDS, ...BRANDS].map((brand, i) => (
+                <span key={i} className={styles.brandChip}>
+                  {brand}
+                </span>
               ))}
             </div>
           </div>
-        </ScrollReveal>
+        </div>
       </div>
     </Section>
   );

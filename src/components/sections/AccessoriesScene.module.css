@@ -1,16 +1,18 @@
-.scene {
-  position: relative;
-  padding: var(--space-section) 0;
-  overflow: hidden;
-  background: var(--color-bg-deep);
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xl);
+  max-width: var(--width-max);
+  margin-inline: auto;
+  padding: 0 var(--section-padding-x);
 }
 
 /* ── Header ── */
 
 .header {
   text-align: center;
-  padding: 0 var(--section-padding-x);
-  margin-bottom: clamp(3rem, 8vh, 6rem);
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .eyebrow {
@@ -20,7 +22,7 @@
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   color: var(--color-amber);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .heading {
@@ -29,139 +31,167 @@
   font-weight: 400;
   line-height: var(--leading-tight);
   color: var(--color-text-primary);
-  margin-bottom: 1rem;
 }
 
 .subtext {
-  font-size: var(--text-body-lg);
+  font-size: var(--text-caption);
   color: var(--color-text-secondary);
-  max-width: 520px;
-  margin: 0 auto;
-  line-height: var(--leading-relaxed);
+  margin-top: 0.5rem;
 }
 
-/* ── Bento Grid ── */
+/* ── Shelf Layout ── */
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0 var(--section-padding-x);
-}
-
-/* ── Category Card ── */
-
-.categoryCard {
-  padding: clamp(1.25rem, 2.5vw, 2rem);
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-sm);
+.shelfGrid {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  transition:
-    border-color var(--duration-normal) var(--ease-smooth),
-    box-shadow var(--duration-normal) var(--ease-smooth);
+  gap: 3.5rem;
+  margin-top: 2rem;
 }
 
-.categoryEmoji {
-  font-size: 2rem;
-  width: 48px;
-  height: 48px;
+.shelfUnit {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.shelfInfo {
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-md);
-  background: var(--color-amber-soft);
+  gap: 0.75rem;
+  padding-left: 0.5rem;
 }
 
-.categoryLabel {
+.shelfEmoji {
+  font-size: 1.35rem;
+  opacity: 0.85;
+}
+
+.shelfTitle {
   font-family: var(--font-heading);
-  font-size: var(--text-subhead);
+  font-size: var(--text-caption);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--color-text-muted);
 }
 
-.itemList {
+.shelfDisplay {
+  position: relative;
+  width: 100%;
+  padding-bottom: 0.5rem;
+}
+
+.itemsRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 0 0.5rem 0.25rem;
 }
 
-.itemTag {
-  display: inline-block;
-  padding: 0.25rem 0.6rem;
+.productPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 1.15rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  font-size: var(--text-caption);
+  color: var(--color-charcoal-900);
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(26, 23, 20, 0.02);
+  cursor: pointer;
+  transform-origin: center bottom;
+  position: relative;
+  z-index: 2;
+}
+
+.productPill::after {
+  content: '';
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: 0;
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* Minimal shelf line */
+.woodLine {
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(to right, rgba(201, 169, 97, 0.05), rgba(201, 169, 97, 0.45) 50%, rgba(201, 169, 97, 0.05));
   border-radius: var(--radius-full);
-  background: rgba(201, 169, 97, 0.05);
-  border: 1px solid rgba(201, 169, 97, 0.1);
-  font-size: var(--text-micro);
-  color: var(--color-text-secondary);
+  box-shadow: 0 4px 12px rgba(201, 169, 97, 0.12);
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Brands Marquee ── */
 
-.brandsRow {
-  margin-top: clamp(3rem, 6vh, 5rem);
-  padding: 0 var(--section-padding-x);
-  text-align: center;
+.brandsWrapper {
+  margin-top: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-.brandsLabel {
-  display: block;
+.brandsTitle {
   font-size: var(--text-label);
   font-weight: 600;
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   color: var(--color-text-subtle);
-  margin-bottom: 1.25rem;
 }
 
-.brands {
+.marquee {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.marqueeInner {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
+  gap: 1.5rem;
+  width: max-content;
+  animation: scrollMarquee 25s linear infinite;
 }
 
 .brandChip {
   display: inline-flex;
   align-items: center;
-  padding: 0.4rem 1rem;
+  padding: 0.5rem 1.25rem;
   border-radius: var(--radius-full);
-  background: var(--glass-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--color-border);
   font-size: var(--text-caption);
-  font-weight: 500;
   color: var(--color-text-secondary);
-  transition:
-    border-color var(--duration-normal) var(--ease-smooth),
-    color var(--duration-normal) var(--ease-smooth);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
 }
 
-.brandChip:hover {
-  border-color: var(--glass-border-accent);
-  color: var(--color-text-primary);
+@keyframes scrollMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 /* ============================================
-   Responsive
+   Responsive (Mobile)
    ============================================ */
 
 @media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr 1fr;
+  .shelfGrid {
+    gap: 2.5rem;
   }
-}
 
-@media (max-width: 480px) {
-  .grid {
-    grid-template-columns: 1fr;
+  .itemsRow {
+    gap: 0.75rem;
+  }
+
+  .productPill {
+    padding: 0.45rem 0.9rem;
+    font-size: var(--text-micro);
   }
 }

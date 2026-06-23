@@ -83,10 +83,10 @@
   --z-cursor: 9999;
 
   /* Layout */
-  --width-max: 1200px;
-  --width-narrow: 900px;
-  --section-padding-x: clamp(1.25rem, 5vw, 5rem);
-  --nav-height: 4.5rem;
+  --width-max: 1250px;
+  --width-narrow: 950px;
+  --section-padding-x: clamp(2rem, 8vw, 7.5rem);
+  --nav-height: 5.5rem;
 
   /* Typography Scale */
   --text-hero: clamp(2.8rem, 7vw, 7rem);

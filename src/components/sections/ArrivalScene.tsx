@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import anime from 'animejs';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
@@ -20,75 +19,21 @@ const whatsappHref = `https://wa.me/${business.whatsapp}?text=${encodeURICompone
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-const BADGE_FLOAT_CONFIG = [
-  { duration: 6200, amplitudeY: -5, delay: 200 },
-  { duration: 8100, amplitudeY: 6, delay: 500 },
-  { duration: 9400, amplitudeY: -4, delay: 800 },
-  { duration: 11100, amplitudeY: 5, delay: 1100 },
-] as const;
-
 export default function ArrivalScene() {
   const reduceMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
-  const portraitRef = useRef<HTMLDivElement>(null);
-  const badgeRefs = useRef<Array<HTMLDivElement | null>>([]);
-  const floatRef = useRef<HTMLDivElement>(null);
-
+  const portraitZoneRef = useRef<HTMLDivElement>(null);
+  const portraitWrapRef = useRef<HTMLDivElement>(null);
   const [scrollHintVisible, setScrollHintVisible] = useState(true);
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
 
   const badgePositions = [styles.badge1, styles.badge2, styles.badge3, styles.badge4];
 
-  // Portrait floating breath animation
-  useEffect(() => {
-    if (!floatRef.current || reduceMotion) return;
-    const el = floatRef.current;
-    const anim = anime({
-      targets: el,
-      translateY: [0, -8, 0, 8, 0],
-      duration: 9200,
-      easing: 'easeInOutSine',
-      loop: true,
-    });
-    return () => {
-      anim.pause();
-      anime.remove(el);
-    };
-  }, [reduceMotion]);
-
-  // Badge floating animations
-  useEffect(() => {
-    if (reduceMotion) return;
-    const timers: ReturnType<typeof setTimeout>[] = [];
-
-    badgeRefs.current.forEach((badge, index) => {
-      if (!badge) return;
-      const cfg = BADGE_FLOAT_CONFIG[index];
-
-      const timer = setTimeout(() => {
-        anime({
-          targets: badge,
-          translateY: [0, cfg.amplitudeY, -cfg.amplitudeY * 0.4, cfg.amplitudeY * 0.2, 0],
-          duration: cfg.duration,
-          easing: 'easeInOutSine',
-          loop: true,
-        });
-      }, cfg.delay);
-      timers.push(timer);
-    });
-
-    return () => {
-      timers.forEach(clearTimeout);
-      badgeRefs.current.forEach((badge) => {
-        if (badge) anime.remove(badge);
-      });
-    };
-  }, [reduceMotion]);
-
-  // Scroll hint hide & GSAP parallax
+  // Scroll Triggered Parallax on Portrait Zone to avoid conflict on portraitWrap
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section || reduceMotion) return;
+    const portraitZone = portraitZoneRef.current;
+    if (!section || !portraitZone || reduceMotion) return;
 
     const onScroll = () => {
       if (window.scrollY > 48) setScrollHintVisible(false);
@@ -96,30 +41,23 @@ export default function ArrivalScene() {
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
 
-    const portrait = portraitRef.current;
-    if (portrait) {
-      gsap.to(portrait, {
-        y: -20,
-        scale: 1.05,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: section,
-          start: 'top top',
-          end: '+=150%',
-          scrub: true,
-        },
-      });
-    }
+    gsap.to(portraitZone, {
+      y: -30,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: section,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+      },
+    });
 
     return () => {
       window.removeEventListener('scroll', onScroll);
-      ScrollTrigger.getAll().forEach((t) => {
-        if (t.vars?.trigger === section) t.kill();
-      });
     };
   }, [reduceMotion]);
 
-  // Pointer parallax
+  // Pointer parallax (runs on wrapper level)
   useEffect(() => {
     if (reduceMotion || (typeof window !== 'undefined' && window.innerWidth < 768)) return;
 
@@ -136,20 +74,24 @@ export default function ArrivalScene() {
   const portraitMotion = reduceMotion
     ? { initial: false as const, animate: { opacity: 1 } }
     : {
-        initial: { opacity: 0, y: 40, scale: 1.03 },
+        initial: { opacity: 0, y: 30, scale: 1.02 },
         animate: { opacity: 1, y: 0, scale: 1 },
-        transition: { duration: 0.9, ease: EASE, delay: 0.15 },
+        transition: { duration: 0.8, ease: EASE, delay: 0.2 },
       };
 
-  const portraitStyle = {
-    transform: `translate3d(${parallax.x * 6}px, ${parallax.y * 6}px, 0)`,
+  // Pointer parallax transform style
+  const wrapStyle = {
+    transform: `translate3d(${parallax.x * 8}px, ${parallax.y * 8}px, 0)`,
     willChange: 'transform' as const,
   };
 
-  const badgeStyle = (index: number) => ({
-    transform: `translate3d(${parallax.x * (14 + index * 3)}px, ${parallax.y * (8 + index * 2)}px, 0)`,
-    willChange: 'transform' as const,
-  });
+  const badgeStyle = (index: number) => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) return {};
+    return {
+      transform: `translate3d(${parallax.x * (16 + index * 4)}px, ${parallax.y * (10 + index * 3)}px, 0)`,
+      willChange: 'transform' as const,
+    };
+  };
 
   return (
     <section ref={sectionRef} className={styles.arrival} id="home" aria-label="Welcome to RS Mobile Corner">
@@ -157,21 +99,21 @@ export default function ArrivalScene() {
       <div className={styles.ambientLayer} aria-hidden="true">
         <motion.div
           className={styles.ambientGlow}
-          animate={reduceMotion ? { opacity: 0.18 } : { opacity: [0.18, 0.3, 0.18], scale: [1, 1.06, 1] }}
-          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+          animate={reduceMotion ? { opacity: 0.05 } : { opacity: [0.05, 0.12, 0.05], scale: [1, 1.04, 1] }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className={styles.ambientGlowSecondary}
-          animate={reduceMotion ? { opacity: 0.1 } : { opacity: [0.08, 0.16, 0.08] }}
-          transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
+          animate={reduceMotion ? { opacity: 0.04 } : { opacity: [0.03, 0.07, 0.03] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
 
-      {/* Left: Editorial Copy */}
+      {/* Copy Zone */}
       <div className={styles.copyZone}>
         <motion.div
           className={styles.metaRow}
-          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 0.3 }}
         >
@@ -183,8 +125,8 @@ export default function ArrivalScene() {
           <SplitText
             mode="words"
             preset="fadeUp"
-            stagger={0.06}
-            duration={0.8}
+            stagger={0.05}
+            duration={0.7}
             delay={0.4}
             trigger="mount"
             tag="span"
@@ -195,12 +137,12 @@ export default function ArrivalScene() {
             className={styles.headlineRotate}
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, ease: EASE, delay: reduceMotion ? 0 : 1.2 }}
+            transition={{ duration: 0.4, ease: EASE, delay: reduceMotion ? 0 : 1.1 }}
           >
             <RotatingText
               words={[...heroRotatingWords]}
-              interval={3200}
-              startDelay={reduceMotion ? 0 : 1400}
+              interval={3000}
+              startDelay={reduceMotion ? 0 : 1200}
               className={styles.rotatingWord}
             />
           </motion.span>
@@ -208,15 +150,15 @@ export default function ArrivalScene() {
 
         <motion.div
           className={styles.infoPanel}
-          initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: EASE, delay: reduceMotion ? 0 : 0.9 }}
+          transition={{ duration: 0.6, ease: EASE, delay: reduceMotion ? 0 : 0.8 }}
         >
-          <div>
+          <div className={styles.founderBlock}>
             <p className={styles.infoName}>{business.founder}</p>
             <p className={styles.infoRole}>Founder</p>
           </div>
-          <div className={styles.infoMeta}>
+          <div className={styles.addressBlock}>
             <span>{business.name}</span>
             <span>{business.location}</span>
             <span>Since {business.established}</span>
@@ -227,7 +169,7 @@ export default function ArrivalScene() {
           className={styles.ctaRow}
           initial={reduceMotion ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 1.0 }}
+          transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 0.9 }}
         >
           <MagneticButton
             href={whatsappHref}
@@ -260,58 +202,57 @@ export default function ArrivalScene() {
         </motion.div>
       </div>
 
-      {/* Right: Portrait */}
-      <div className={styles.portraitZone}>
+      {/* Right: Portrait Zone */}
+      <div ref={portraitZoneRef} className={styles.portraitZone}>
         <motion.div
-          ref={portraitRef}
+          ref={portraitWrapRef}
           className={styles.portraitWrap}
           {...portraitMotion}
-          style={portraitStyle}
+          style={wrapStyle}
         >
           <div className={styles.portraitGlow} aria-hidden="true" />
-          <div ref={floatRef} className={styles.portraitInner}>
+          <div className={`${styles.portraitInner} ${styles.floatAnim}`}>
             <Image
               src="/founder.jpg"
               alt={`${business.founder} — Founder of ${business.name}`}
               fill
-              preload
+              preload={true}
               className={styles.portraitImage}
-              sizes="(max-width: 900px) 55vw, 32vw"
+              sizes="(max-width: 768px) 90vw, (max-width: 1200px) 45vw, 32vw"
             />
           </div>
 
           <motion.div
             className={styles.caption}
-            initial={reduceMotion ? false : { opacity: 0, x: -12 }}
+            initial={reduceMotion ? false : { opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.55, ease: EASE, delay: reduceMotion ? 0 : 0.8 }}
+            transition={{ duration: 0.55, ease: EASE, delay: reduceMotion ? 0 : 0.7 }}
           >
             <span>{business.founder}</span>
             <span>{business.location}</span>
           </motion.div>
 
-          {trustBadges.map((badge, i) => (
-            <motion.div
-              key={badge.text}
-              ref={(node) => {
-                badgeRefs.current[i] = node;
-              }}
-              className={`${styles.trustBadge} ${badgePositions[i]}`}
-              initial={reduceMotion ? false : { opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                duration: 0.5,
-                ease: EASE,
-                delay: reduceMotion ? 0 : 0.7 + i * 0.08,
-              }}
-              style={badgeStyle(i)}
-            >
-              <span className={styles.badgeIcon} aria-hidden="true">
-                {badge.icon}
-              </span>
-              {badge.text}
-            </motion.div>
-          ))}
+          <div className={styles.badgesWrap}>
+            {trustBadges.map((badge, i) => (
+              <motion.div
+                key={badge.text}
+                className={`${styles.trustBadge} ${badgePositions[i]} ${styles[`badgeFloat${i + 1}`]}`}
+                initial={reduceMotion ? false : { opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.5,
+                  ease: EASE,
+                  delay: reduceMotion ? 0 : 0.6 + i * 0.1,
+                }}
+                style={badgeStyle(i)}
+              >
+                <span className={styles.badgeIcon} aria-hidden="true">
+                  {badge.icon}
+                </span>
+                {badge.text}
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </div>
 
@@ -324,7 +265,7 @@ export default function ArrivalScene() {
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 0.35 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 1.8 }}
+            transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 1.5 }}
           >
             <span className={styles.scrollLabel}>Scroll</span>
             <div className={styles.scrollTrack}>
