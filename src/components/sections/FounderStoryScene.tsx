@@ -32,17 +32,17 @@ export default function FounderStoryScene() {
     if (cards.length === 0) return;
 
     const totalCards = cards.length;
-    const scrollHeight = window.innerHeight * 1.5 * totalCards;
+    const scrollHeight = window.innerHeight * 1.6 * totalCards;
 
     const ctx = gsap.context(() => {
       // Pinned ScrollTrigger for the story deck container
-      const timeline = gsap.timeline({
+      const tl = gsap.timeline({
         scrollTrigger: {
           trigger: section,
           start: 'top top',
           end: `+=${scrollHeight}`,
           pin: true,
-          scrub: 1,
+          scrub: 0.5,
           onUpdate: (self) => {
             const index = Math.min(
               totalCards - 1,
@@ -53,27 +53,46 @@ export default function FounderStoryScene() {
         },
       });
 
-      // Animate cards based on active scroll state
+      // Apple Wallet Style Stacking Logic (next card is always BEHIND active card)
       cards.forEach((card, index) => {
-        if (index === 0) return; // First card is active at start
+        // Set starting properties to establish the stack depth layers
+        gsap.set(card, {
+          zIndex: 50 - index, // earlier cards stay on top
+          yPercent: index * 10,
+          scale: 1 - index * 0.03,
+          opacity: index === 0 ? 1 : 0.85 - index * 0.1,
+          transformOrigin: 'center bottom',
+        });
 
-        // Scrubbing timeline for each card's entrance/promotion
-        timeline.fromTo(
-          card,
-          {
-            yPercent: 100,
-            scale: 0.92,
+        if (index === 0) {
+          // Card 0 slides up and out of the stack
+          tl.to(card, {
+            yPercent: -120,
             opacity: 0,
-          },
-          {
+            scale: 0.95,
+            duration: 1,
+            ease: 'power1.inOut',
+          }, 0);
+        } else {
+          // Card index > 0 starts waiting, promotes to active (center), then slides out
+          // Promotion:
+          tl.to(card, {
             yPercent: 0,
             scale: 1,
             opacity: 1,
             duration: 1,
-            ease: 'power2.out',
-          },
-          index - 0.75 // overlapping timing
-        );
+            ease: 'power1.inOut',
+          }, index - 1);
+
+          // Exit:
+          tl.to(card, {
+            yPercent: -120,
+            opacity: 0,
+            scale: 0.95,
+            duration: 1,
+            ease: 'power1.inOut',
+          }, index);
+        }
       });
     }, section);
 
@@ -84,10 +103,10 @@ export default function FounderStoryScene() {
     reduceMotion
       ? {}
       : {
-          initial: { opacity: 0, y: 30 } as const,
+          initial: { opacity: 0, y: 25 } as const,
           whileInView: { opacity: 1, y: 0 } as const,
           viewport: { once: true, amount: 0.2 },
-          transition: { duration: 0.8, ease: EASE, delay },
+          transition: { duration: 0.7, ease: EASE, delay },
         };
 
   return (
@@ -105,7 +124,7 @@ export default function FounderStoryScene() {
             Chapter {activeIndex + 1} of {founderMilestones.length}
           </p>
           <div className={styles.scrollIndicatorMobile} aria-hidden="true">
-            <span>Scroll Down to Read</span>
+            <span>Scroll Down</span>
             <div className={styles.chevron} />
           </div>
         </div>
@@ -115,12 +134,10 @@ export default function FounderStoryScene() {
           {founderMilestones.map((ms, i) => {
             const isActive = i === activeIndex;
             const isPrevious = i < activeIndex;
-            const isNext = i > activeIndex;
 
             let cardClass = styles.card;
             if (isActive) cardClass += ` ${styles.activeCard}`;
             else if (isPrevious) cardClass += ` ${styles.previousCard}`;
-            else if (isNext) cardClass += ` ${styles.nextCard}`;
 
             return (
               <div key={ms.id} className={cardClass}>

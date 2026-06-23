@@ -8,7 +8,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import MagneticButton from '@/components/ui/MagneticButton';
 import SplitText from '@/components/ui/SplitText';
 import RotatingText from '@/components/ui/RotatingText';
-import { business, heroRotatingWords, trustBadges } from '@/content/business';
+import { business, heroRotatingWords } from '@/content/business';
 import styles from './ArrivalScene.module.css';
 
 if (typeof window !== 'undefined') {
@@ -19,6 +19,13 @@ const whatsappHref = `https://wa.me/${business.whatsapp}?text=${encodeURICompone
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
+// The 3 essential badges requested
+const badges = [
+  { text: 'Personally Repaired', icon: '✓' },
+  { text: 'Honest Diagnosis', icon: '◆' },
+  { text: 'Since 2021', icon: '★' },
+];
+
 export default function ArrivalScene() {
   const reduceMotion = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
@@ -27,7 +34,7 @@ export default function ArrivalScene() {
   const [scrollHintVisible, setScrollHintVisible] = useState(true);
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
 
-  const badgePositions = [styles.badge1, styles.badge2, styles.badge3, styles.badge4];
+  const badgePositions = [styles.badge1, styles.badge2, styles.badge3];
 
   // Scroll Triggered Parallax on Portrait Zone to avoid conflict on portraitWrap
   useEffect(() => {
@@ -42,7 +49,7 @@ export default function ArrivalScene() {
     onScroll();
 
     gsap.to(portraitZone, {
-      y: -30,
+      y: -25,
       ease: 'none',
       scrollTrigger: {
         trigger: section,
@@ -57,7 +64,7 @@ export default function ArrivalScene() {
     };
   }, [reduceMotion]);
 
-  // Pointer parallax (runs on wrapper level)
+  // Pointer parallax (runs on wrapper level, GPU-accelerated)
   useEffect(() => {
     if (reduceMotion || (typeof window !== 'undefined' && window.innerWidth < 768)) return;
 
@@ -79,16 +86,16 @@ export default function ArrivalScene() {
         transition: { duration: 0.8, ease: EASE, delay: 0.2 },
       };
 
-  // Pointer parallax transform style
+  // Pointer parallax transform style with GPU acceleration layers
   const wrapStyle = {
-    transform: `translate3d(${parallax.x * 8}px, ${parallax.y * 8}px, 0)`,
+    transform: `translate3d(${parallax.x * 6}px, ${parallax.y * 6}px, 0)`,
     willChange: 'transform' as const,
   };
 
   const badgeStyle = (index: number) => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) return {};
     return {
-      transform: `translate3d(${parallax.x * (16 + index * 4)}px, ${parallax.y * (10 + index * 3)}px, 0)`,
+      transform: `translate3d(${parallax.x * (12 + index * 3)}px, ${parallax.y * (8 + index * 2)}px, 0)`,
       willChange: 'transform' as const,
     };
   };
@@ -99,27 +106,31 @@ export default function ArrivalScene() {
       <div className={styles.ambientLayer} aria-hidden="true">
         <motion.div
           className={styles.ambientGlow}
-          animate={reduceMotion ? { opacity: 0.05 } : { opacity: [0.05, 0.12, 0.05], scale: [1, 1.04, 1] }}
+          animate={reduceMotion ? { opacity: 0.04 } : { opacity: [0.04, 0.1, 0.04], scale: [1, 1.02, 1] }}
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className={styles.ambientGlowSecondary}
-          animate={reduceMotion ? { opacity: 0.04 } : { opacity: [0.03, 0.07, 0.03] }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
 
       {/* Copy Zone */}
       <div className={styles.copyZone}>
-        <motion.div
-          className={styles.metaRow}
-          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 0.3 }}
-        >
-          <span>RS Mobile Corner</span>
-          <span>Est. {business.established}</span>
-        </motion.div>
+        {/* Handwritten signature draw-in animation */}
+        <div className={styles.signatureWrap} aria-hidden="true">
+          <svg viewBox="0 0 240 50" className={styles.handwrittenSvg}>
+            <text
+              x="5"
+              y="32"
+              fontFamily="'Instrument Serif', Georgia, serif"
+              fontSize="24"
+              fontStyle="italic"
+              fill="none"
+              stroke="var(--color-amber)"
+              strokeWidth="1.2"
+              className={styles.signatureText}
+            >
+              Meet Rahim Bhai
+            </text>
+          </svg>
+        </div>
 
         <h1 className={styles.headline}>
           <SplitText
@@ -127,7 +138,7 @@ export default function ArrivalScene() {
             preset="fadeUp"
             stagger={0.05}
             duration={0.7}
-            delay={0.4}
+            delay={0.3}
             trigger="mount"
             tag="span"
           >
@@ -137,39 +148,22 @@ export default function ArrivalScene() {
             className={styles.headlineRotate}
             initial={reduceMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, ease: EASE, delay: reduceMotion ? 0 : 1.1 }}
+            transition={{ duration: 0.4, ease: EASE, delay: reduceMotion ? 0 : 1.0 }}
           >
             <RotatingText
               words={[...heroRotatingWords]}
               interval={3000}
-              startDelay={reduceMotion ? 0 : 1200}
+              startDelay={reduceMotion ? 0 : 1100}
               className={styles.rotatingWord}
             />
           </motion.span>
         </h1>
 
         <motion.div
-          className={styles.infoPanel}
-          initial={reduceMotion ? false : { opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: EASE, delay: reduceMotion ? 0 : 0.8 }}
-        >
-          <div className={styles.founderBlock}>
-            <p className={styles.infoName}>{business.founder}</p>
-            <p className={styles.infoRole}>Founder</p>
-          </div>
-          <div className={styles.addressBlock}>
-            <span>{business.name}</span>
-            <span>{business.location}</span>
-            <span>Since {business.established}</span>
-          </div>
-        </motion.div>
-
-        <motion.div
           className={styles.ctaRow}
           initial={reduceMotion ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 0.9 }}
+          transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 0.8 }}
         >
           <MagneticButton
             href={whatsappHref}
@@ -200,6 +194,18 @@ export default function ArrivalScene() {
             Directions
           </MagneticButton>
         </motion.div>
+
+        {/* Essential Address / Info */}
+        <motion.div
+          className={styles.miniMeta}
+          initial={reduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 0.6 }}
+          transition={{ duration: 0.5, delay: 1.2 }}
+        >
+          <span>📍 {business.location}</span>
+          <span>•</span>
+          <span>9:30 AM – 9:30 PM</span>
+        </motion.div>
       </div>
 
       {/* Right: Portrait Zone */}
@@ -222,18 +228,8 @@ export default function ArrivalScene() {
             />
           </div>
 
-          <motion.div
-            className={styles.caption}
-            initial={reduceMotion ? false : { opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.55, ease: EASE, delay: reduceMotion ? 0 : 0.7 }}
-          >
-            <span>{business.founder}</span>
-            <span>{business.location}</span>
-          </motion.div>
-
           <div className={styles.badgesWrap}>
-            {trustBadges.map((badge, i) => (
+            {badges.map((badge, i) => (
               <motion.div
                 key={badge.text}
                 className={`${styles.trustBadge} ${badgePositions[i]} ${styles[`badgeFloat${i + 1}`]}`}
@@ -242,7 +238,7 @@ export default function ArrivalScene() {
                 transition={{
                   duration: 0.5,
                   ease: EASE,
-                  delay: reduceMotion ? 0 : 0.6 + i * 0.1,
+                  delay: reduceMotion ? 0 : 0.5 + i * 0.1,
                 }}
                 style={badgeStyle(i)}
               >
@@ -263,9 +259,9 @@ export default function ArrivalScene() {
             className={styles.scrollHint}
             aria-hidden="true"
             initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 0.35 }}
+            animate={{ opacity: 0.3 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 1.5 }}
+            transition={{ duration: 0.5, ease: EASE, delay: reduceMotion ? 0 : 1.4 }}
           >
             <span className={styles.scrollLabel}>Scroll</span>
             <div className={styles.scrollTrack}>

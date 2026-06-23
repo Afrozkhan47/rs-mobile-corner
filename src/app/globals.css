@@ -169,12 +169,19 @@ html {
 }
 
 body {
-  background-color: var(--color-bg);
+  background: radial-gradient(circle at 50% 50%, var(--color-cream-50) 0%, var(--color-cream-100) 60%, var(--color-cream-200) 100%);
+  background-size: 140% 140%;
+  animation: ambientBgMove 20s ease-in-out infinite;
   color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: var(--text-body);
   line-height: var(--leading-normal);
   overflow-x: hidden;
+}
+
+@keyframes ambientBgMove {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 ::selection {
