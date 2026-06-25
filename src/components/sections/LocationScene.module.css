@@ -1,0 +1,186 @@
+/* ============================================================
+   LocationScene — "The Destination"
+   Dark, elegant finale with location and CTA combined.
+   ============================================================ */
+
+.scene {
+  background: var(--color-charcoal-950);
+  color: var(--color-cream-50);
+  padding: clamp(6rem, 15vw, 12rem) 0 clamp(4rem, 10vw, 8rem);
+  position: relative;
+  overflow: hidden;
+}
+
+.inner {
+  width: 100%;
+  max-width: var(--width-narrow);
+  margin: 0 auto;
+  padding: 0 var(--section-padding-x);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4rem, 8vw, 6rem);
+}
+
+/* ── Top Section ───────────────────────────────────────────── */
+
+.topSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.heading {
+  font-family: var(--font-editorial);
+  font-size: clamp(3.5rem, 8vw, 6rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--color-cream-50);
+}
+
+.lead {
+  font-family: var(--font-sans);
+  font-size: clamp(1.1rem, 1.5vw, 1.25rem);
+  color: var(--color-warm-gray-500);
+  margin: 0;
+}
+
+/* ── Grid (Address & Hours) ────────────────────────────────── */
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(3rem, 6vw, 4rem);
+  padding: clamp(2rem, 4vw, 3rem) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.label {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-amber);
+  margin-bottom: 1.25rem;
+}
+
+.addressBlock, .hoursBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.value {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  line-height: 1.4;
+  color: var(--color-cream-100);
+  margin: 0;
+  font-style: normal;
+}
+
+.addressLine {
+  display: block;
+}
+
+.subValue {
+  font-family: var(--font-sans);
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  color: var(--color-warm-gray-500);
+  margin: 0.5rem 0 0 0;
+}
+
+.mapLink {
+  margin-top: 1.5rem;
+  align-self: flex-start;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--color-cream-50);
+  text-decoration: none;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--color-warm-gray-600);
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.mapLink:hover {
+  color: var(--color-amber);
+  border-color: var(--color-amber);
+}
+
+/* ── CTA Section ───────────────────────────────────────────── */
+
+.ctaSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2.5rem;
+  padding-top: 2rem;
+}
+
+.ctaHeading {
+  font-family: var(--font-editorial);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-style: italic;
+  color: var(--color-warm-gray-500);
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.primaryAction, .secondaryAction {
+  padding: 1.2rem 2.5rem;
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+}
+
+.primaryAction {
+  background: var(--color-cream-50);
+  color: var(--color-charcoal-950);
+}
+
+.primaryAction:hover {
+  transform: translateY(-2px);
+  background: white;
+}
+
+.secondaryAction {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-cream-50);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.secondaryAction:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Mobile Optimization (390px / 430px) ───────────────────── */
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .primaryAction, .secondaryAction {
+    width: 100%;
+  }
+}

@@ -28,7 +28,7 @@
   /* Typography */
   --font-sans: var(--font-inter), 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-space-grotesk), 'Space Grotesk', sans-serif;
-  --font-serif: var(--font-instrument-serif), 'Instrument Serif', 'Georgia', serif;
+  --font-serif: var(--font-cormorant), var(--font-instrument-serif), 'Instrument Serif', 'Georgia', serif;
 
   /* Spacing */
   --space-xs: 0.25rem;
@@ -112,6 +112,12 @@
   --tracking-wide: 0.06em;
   --tracking-wider: 0.12em;
   --tracking-widest: 0.2em;
+}
+
+.section-breathe {
+  width: 100%;
+  height: clamp(3rem, 8vh, 6rem);
+  background: var(--color-bg);
 }
 
 /* --- Tier 2: Semantic Design Tokens --- */

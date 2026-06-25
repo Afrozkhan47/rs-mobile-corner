@@ -1,48 +1,42 @@
+/* ============================================================
+   Footer — Minimalist distinctive credit
+   ============================================================ */
+
 .footer {
-  padding: var(--space-3xl) var(--section-padding-x);
-  border-top: 1px solid var(--color-border);
+  background: #050505; /* Pitch black for sharp contrast with the section above */
+  color: var(--color-warm-gray-600);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .inner {
+  width: 100%;
+  max-width: var(--width-max);
+  padding: clamp(2.5rem, 5vh, 4rem) var(--section-padding-x);
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: var(--space-lg);
-  opacity: 0.55;
-  font-size: var(--text-micro);
+}
+
+.credit {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  letter-spacing: var(--tracking-widest);
+  margin: 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.35);
+  transition: color 0.4s ease;
 }
 
-@media (min-width: 768px) {
-  .inner {
-    flex-direction: row;
-    justify-content: space-between;
-  }
+.credit:hover {
+  color: rgba(255, 255, 255, 0.75);
 }
 
-.copyright {
-  white-space: nowrap;
-}
-
-.socialNav {
-  display: flex;
-  gap: var(--space-2xl);
-}
-
-.socialLink {
-  transition: opacity var(--duration-normal) var(--ease-out-expo);
-}
-
-.socialLink:hover {
-  opacity: 0.8;
-}
-
-.socialLink:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 4px;
-}
-
-.tagline {
-  white-space: nowrap;
+.name {
+  color: var(--color-amber);
+  font-weight: 600;
 }

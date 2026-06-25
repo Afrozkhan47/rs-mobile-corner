@@ -1,0 +1,27 @@
+.light-rays-container {
+  opacity: 0.035; /* Reduced from 0.06 */
+  mix-blend-mode: screen;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  /* Soft vertical mask so rays gradually fade out toward bottom */
+  -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 80%);
+  mask-image: linear-gradient(to bottom, black 20%, transparent 80%);
+}
+
+.light-rays-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .light-rays-container {
+    opacity: 0.02 !important; /* Reduce intensity another ~30-40% on mobile for performance/readability */
+  }
+}

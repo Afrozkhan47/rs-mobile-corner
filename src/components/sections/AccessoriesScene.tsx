@@ -1,91 +1,165 @@
 'use client';
 
-import React from 'react';
-import Section from '@/components/layout/Section';
-import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useReducedMotion } from 'framer-motion';
 import styles from './AccessoriesScene.module.css';
 
-const CATEGORIES = [
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+const ACCESSORIES = [
   {
-    emoji: '🔌',
-    label: 'Chargers & Power',
-    items: ['Fast Chargers', 'Type-C Power Delivery', 'Lightning Cables', 'Power Banks', 'Wireless Pads'],
+    name: 'Tempered Glass',
+    detail: 'Full-cover protection. Applied in-shop, bubble-free.',
   },
   {
-    emoji: '🛡️',
-    label: 'Shield Protection',
-    items: ['Tempered Glass', 'Frosted Back Covers', 'Privacy Protectors', 'Camera Glass Seals'],
+    name: 'Mobile Covers',
+    detail: 'Slim, rugged, and designed for the model you carry.',
   },
   {
-    emoji: '🎧',
-    label: 'Premium Audio',
-    items: ['Hi-Fi Earbuds', 'Noise Neckbands', 'Mini Bluetooth Speakers'],
+    name: 'Fast Chargers',
+    detail: 'Certified adapters. No cheap knockoffs.',
   },
   {
-    emoji: '💾',
-    label: 'Storage & Mounts',
-    items: ['Memory Cards', 'High-Speed Pen Drives', 'Magnetic Car Mounts'],
+    name: 'Type-C Cables',
+    detail: 'Braided. Tested. Built for daily use.',
+  },
+  {
+    name: 'Lightning Cables',
+    detail: 'MFi-grade cables for Apple devices.',
+  },
+  {
+    name: 'Earbuds',
+    detail: 'Wired and wireless. Clear sound, real price.',
+  },
+  {
+    name: 'Neckbands',
+    detail: 'All-day wear. Reliable Bluetooth. No nonsense.',
+  },
+  {
+    name: 'Power Banks',
+    detail: 'Compact and high-capacity. For long days.',
+  },
+  {
+    name: 'Bluetooth Speakers',
+    detail: 'Portable audio that actually sounds good.',
+  },
+  {
+    name: 'Memory Cards',
+    detail: 'Class 10. Fast write speeds. Multiple sizes.',
   },
 ];
 
-const BRANDS = ['Apple', 'Samsung', 'OnePlus', 'Realme', 'Boat', 'JBL', 'Noise', 'Ambrane'];
-
 export default function AccessoriesScene() {
+  const reduceMotion = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const itemsRef = useRef<Array<HTMLLIElement | null>>([]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || reduceMotion) return;
+
+    const header = headerRef.current;
+    const items = itemsRef.current.filter(Boolean) as HTMLLIElement[];
+
+    if (header) {
+      gsap.fromTo(
+        header.children,
+        { opacity: 0, x: -24 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 1,
+          stagger: 0.15,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: header,
+            start: 'top 80%',
+          },
+        }
+      );
+    }
+
+    items.forEach((item, i) => {
+      // Subtle reveal for each row
+      gsap.fromTo(
+        item,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: item,
+            start: 'top 95%', // triggers just as it enters viewport
+          },
+        }
+      );
+
+      // Scroll-driven active state (Golden color & animation when crossing exact center)
+      ScrollTrigger.create({
+        trigger: item,
+        start: 'top 50%',
+        end: 'bottom 50%',
+        toggleClass: styles.indexItemActive,
+      });
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(st => {
+        if (header && st.trigger === header) st.kill();
+        if (items.includes(st.trigger as HTMLLIElement)) st.kill();
+      });
+    };
+  }, [reduceMotion]);
+
   return (
-    <Section variant="default" id="accessories">
+    <section
+      ref={sectionRef}
+      className={styles.scene}
+      id="accessories"
+      aria-label="Curated Accessories"
+    >
       <div className={styles.inner}>
-        {/* Header */}
-        <div className={styles.header}>
-          <span className={styles.eyebrow}>Selected Stock</span>
-          <h2 className={styles.heading}>The Premium Accessories Shelves</h2>
-          <p className={styles.subtext}>
-            Personally curated, high-quality accessories from top-tier brands.
-          </p>
+        
+        {/* Sticky Sidebar on Desktop */}
+        <div className={styles.stickyColumn}>
+          <header ref={headerRef} className={styles.header}>
+            <span className={styles.eyebrow}>In Stock · Dighi</span>
+            <h2 className={styles.heading}>
+              The right tool<br />
+              <em>for the right phone.</em>
+            </h2>
+            <p className={styles.subtext}>
+              Everything stocked here is tested by Rahim Bhai before it goes on the shelf. No grey-market imports. No inflated prices.
+            </p>
+          </header>
         </div>
 
-        {/* Visual Shelving Layout */}
-        <div className={styles.shelfGrid}>
-          {CATEGORIES.map((cat, i) => (
-            <div key={i} className={styles.shelfUnit}>
-              <div className={styles.shelfInfo}>
-                <span className={styles.shelfEmoji}>{cat.emoji}</span>
-                <h3 className={styles.shelfTitle}>{cat.label}</h3>
-              </div>
-
-              {/* Wooden-textured/Amber minimal shelf line */}
-              <div className={styles.shelfDisplay}>
-                <div className={styles.itemsRow}>
-                  {cat.items.map((item, j) => (
-                    <motion.div
-                      key={j}
-                      className={styles.productPill}
-                      whileHover={{ y: -8, scale: 1.04 }}
-                      transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                    >
-                      {item}
-                    </motion.div>
-                  ))}
+        {/* Scrolling Typographic Index */}
+        <div className={styles.scrollColumn}>
+          <ul className={styles.indexList}>
+            {ACCESSORIES.map((item, i) => (
+              <li
+                key={item.name}
+                ref={el => { itemsRef.current[i] = el; }}
+                className={styles.indexItem}
+              >
+                <div className={styles.itemContent}>
+                  <h3 className={styles.itemName}>{item.name}</h3>
+                  <p className={styles.itemDetail}>{item.detail}</p>
                 </div>
-                <div className={styles.woodLine} />
-              </div>
-            </div>
-          ))}
+                <div className={styles.itemHoverGlow} aria-hidden="true" />
+              </li>
+            ))}
+          </ul>
         </div>
-
-        {/* Brand Row Marquee */}
-        <div className={styles.brandsWrapper}>
-          <span className={styles.brandsTitle}>Curated Brands</span>
-          <div className={styles.marquee}>
-            <div className={styles.marqueeInner}>
-              {[...BRANDS, ...BRANDS].map((brand, i) => (
-                <span key={i} className={styles.brandChip}>
-                  {brand}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
+        
       </div>
-    </Section>
+    </section>
   );
 }

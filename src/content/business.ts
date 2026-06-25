@@ -17,19 +17,4 @@ export const business = {
   mapsUrl: 'https://maps.app.goo.gl/3s1sDQeMnLWmcfJB7',
 } as const;
 
-export const heroRotatingWords = [
-  'Display Repair',
-  'Battery Replacement',
-  'Charging Port',
-  'Motherboard Repair',
-  'Accessories',
-  'Software Repair',
-  'Fast Repairs',
-] as const;
 
-export const trustBadges = [
-  { text: 'Personally Repaired', icon: '✓' },
-  { text: 'Honest Diagnosis', icon: '◆' },
-  { text: '500+ Repairs', icon: '★' },
-  { text: 'Since 2021', icon: '●' },
-] as const;

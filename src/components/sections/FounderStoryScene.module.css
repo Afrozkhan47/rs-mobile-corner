@@ -1,276 +1,246 @@
+/* ============================================================
+   FounderStoryScene — Premium smooth card slider
+   ============================================================ */
+
 .scene {
   position: relative;
   width: 100%;
   background: var(--color-bg);
 }
 
-.container {
-  height: 100vh;
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
+/* ── Intro Section ───────────────────────────────────────────── */
+
+.introScene {
+  min-height: 80svh;
+  display: flex;
   align-items: center;
-  padding: 0 var(--section-padding-x);
-  gap: 4rem;
-  max-width: var(--width-max);
-  margin: 0 auto;
+  justify-content: center;
+  background: var(--color-bg);
+  padding: var(--section-padding-x);
   position: relative;
-  overflow: hidden;
 }
 
-/* ── Header ── */
-
-.header {
+.introInner {
+  max-width: var(--width-narrow);
+  text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 1.5rem;
+  position: relative;
+  z-index: 2;
 }
 
-.eyebrow {
-  display: inline-block;
-  font-size: var(--text-label);
-  font-weight: 600;
+.introEyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   color: var(--color-amber);
+  font-weight: 600;
 }
 
-.sectionTitle {
+.introHeading {
   font-family: var(--font-editorial);
-  font-size: var(--text-display);
-  font-weight: 400;
-  line-height: var(--leading-tight);
-  color: var(--color-text-primary);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1.1;
+  color: var(--color-charcoal-900);
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
-/* Progress Tracker Bar */
-.progressTracker {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  margin-top: 1.5rem;
-  width: 100%;
-  max-width: 320px;
+.introHeadingSub {
+  font-style: italic;
+  color: var(--color-warm-gray-600);
 }
 
-.progressIndex, .progressTotal {
-  font-family: var(--font-heading);
-  font-size: var(--text-caption);
-  color: var(--color-text-muted);
-  font-weight: 500;
-}
+/* ── Gallery Container ─────────────────────────────────────── */
 
-.progressBar {
-  flex: 1;
-  height: 2px;
-  background: var(--color-border);
-  border-radius: 1px;
+.galleryContainer {
   position: relative;
+  width: 100%;
+  padding: 3rem 0 4rem;
+  background: var(--color-charcoal-950);
   overflow: hidden;
 }
 
-.progressFill {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  background: var(--color-amber);
-  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.scrollIndicatorMobile {
-  display: none;
-}
-
-/* ── Horizontal Stacked Card Deck ── */
-
-.deck {
-  position: relative;
+/* ── Slider Viewport (clips the track, but don't hide overflow on x so cards peek) */
+.sliderViewport {
   width: 100%;
-  max-width: 440px;
-  height: 480px;
-  justify-self: center;
-  perspective: 1500px;
-  transform-style: preserve-3d;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+  padding: 1rem 0 1.5rem; /* Minimal vertical space — just enough for the active card shadow */
 }
 
-.card {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 3rem;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  border-radius: var(--radius-2xl);
-  box-shadow:
-    0 30px 90px rgba(26, 23, 20, 0.08),
-    0 10px 30px rgba(26, 23, 20, 0.03);
+.sliderViewport:active {
+  cursor: grabbing;
+}
+
+/* ── Track (slides via JS transform) */
+.sliderTrack {
+  display: flex;
+  gap: 20px;
+  /* Side-padding = half viewport minus half card width, so first card starts centered */
+  padding: 0 calc(50vw - 150px);
+  will-change: transform;
+}
+
+/* ── Story Cards ──────────────────────────────────────────── */
+
+.storyCard {
+  flex-shrink: 0;
+  width: 300px;
+  /* No min-height — card grows only as tall as its content */
+  background: var(--color-charcoal-900, #1c1917);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 1.5rem;
+  padding: 1.75rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  will-change: transform, opacity;
-  transition:
-    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
+  gap: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s ease,
+              box-shadow 0.4s ease;
+  transform: scale(0.92);
+  opacity: 0.55;
 }
 
-.activeCard {
+/* Inset glow at top */
+.storyCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(212,175,55,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.storyCardActive {
+  transform: scale(1);
+  opacity: 1;
+  border-color: rgba(212, 175, 55, 0.18);
   box-shadow:
-    0 40px 110px rgba(26, 23, 20, 0.12),
-    0 15px 40px rgba(26, 23, 20, 0.06);
-  border-color: rgba(201, 169, 97, 0.25);
+    0 0 0 1px rgba(212, 175, 55, 0.08),
+    0 24px 60px rgba(0, 0, 0, 0.5),
+    0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
-/* Inside Card Styling */
-
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+.storyCardActive::before {
+  opacity: 1;
 }
 
-.cardNum {
-  font-family: var(--font-heading);
-  font-size: var(--text-caption);
-  color: var(--color-text-subtle);
-  font-weight: 500;
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-}
+/* ── Card Content ──────────────────────────────────────────── */
 
 .cardYear {
-  font-family: var(--font-editorial);
-  font-size: var(--text-heading);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   color: var(--color-amber);
-}
-
-.cardIcon {
-  font-size: 1.5rem;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  align-self: flex-start;
 }
 
 .cardBody {
-  margin-top: 1.5rem;
-  flex: 1;
-}
-
-.cardTitle {
-  font-family: var(--font-heading);
-  font-size: var(--text-heading);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 0.75rem;
-}
-
-.cardDesc {
-  font-size: var(--text-body);
-  line-height: var(--leading-relaxed);
-  color: var(--color-text-secondary);
-}
-
-.cardVisual {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-  margin-top: auto;
-}
-
-.counterWrap {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  gap: 1rem;
+  /* Removed flex: 1 — let content dictate height, no artificial stretch */
 }
 
-.counterNum {
+.cardHeadline {
   font-family: var(--font-editorial);
-  font-size: clamp(3rem, 6vw, 4.5rem);
-  font-weight: 400;
-  color: var(--color-amber);
-  line-height: 1;
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  line-height: 1.2;
+  color: var(--color-cream-50);
+  margin: 0;
+  letter-spacing: -0.015em;
 }
 
-.counterLabel {
-  font-size: var(--text-micro);
+.cardDetail {
+  font-family: var(--font-sans);
+  font-size: clamp(0.88rem, 2vw, 0.95rem);
+  line-height: 1.65;
+  color: var(--color-warm-gray-500);
+  margin: 0;
+}
+
+.cardQuote {
+  font-family: var(--font-editorial);
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  font-style: italic;
+  color: rgba(212, 175, 55, 0.5);
+  margin: 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  line-height: 1.5;
+}
+
+/* ── Dot Navigation ───────────────────────────────────────── */
+
+.dotNav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 2rem;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.35s ease;
+}
+
+.dotActive {
+  width: 24px;
+  background: var(--color-amber);
+}
+
+/* ── Hint ─────────────────────────────────────────────────── */
+
+.galleryHint {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  letter-spacing: var(--tracking-widest);
-  color: var(--color-text-muted);
-  margin-top: 0.25rem;
+  color: rgba(255, 255, 255, 0.2);
+  pointer-events: none;
 }
 
-.visualEmoji {
-  font-size: 3rem;
+/* ── Desktop: wider cards ─────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .sliderTrack {
+    gap: 28px;
+    padding: 0 calc(50vw - 200px);
+  }
+
+  .storyCard {
+    width: 400px;
+  }
 }
 
-.swipeTip {
-  display: none;
-}
+/* ── Reduced Motion ──────────────────────────────────────── */
 
-/* ============================================
-   Mobile layout (Responsive)
-   ============================================ */
-
-@media (max-width: 768px) {
-  .container {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
-    gap: 2rem;
-    height: auto;
-    padding: calc(var(--nav-height) + 1rem) 1.5rem 3rem;
-    justify-content: center;
-  }
-
-  .header {
-    align-items: center;
-    text-align: center;
-    gap: 0.5rem;
-    width: 100%;
-  }
-
-  .sectionTitle {
-    font-size: clamp(1.8rem, 7vw, 2.3rem);
-  }
-
-  .progressTracker {
-    margin: 0.5rem auto 0;
-  }
-
-  .deck {
-    height: 380px;
-    max-width: 320px;
-    width: 100%;
-    margin: 1.5rem auto 0;
-  }
-
-  .card {
-    padding: 2.2rem;
-  }
-
-  .cardTitle {
-    font-size: var(--text-subhead);
-    margin-bottom: 0.5rem;
-  }
-
-  .cardDesc {
-    font-size: var(--text-caption);
-  }
-
-  .counterNum {
-    font-size: 2.8rem;
-  }
-
-  .swipeTip {
-    display: block;
-    text-align: center;
-    font-size: var(--text-micro);
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-wider);
-    color: var(--color-text-subtle);
-    margin-top: 1rem;
+@media (prefers-reduced-motion: reduce) {
+  .storyCard {
+    transition: none;
   }
 }
