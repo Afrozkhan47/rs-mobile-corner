@@ -172,12 +172,12 @@ html {
   scroll-behavior: auto; /* Lenis handles smooth scroll */
   scrollbar-color: var(--color-cream-400) transparent;
   scrollbar-width: thin;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
-  background: radial-gradient(circle at 50% 50%, var(--color-cream-50) 0%, var(--color-cream-100) 60%, var(--color-cream-200) 100%);
-  background-size: 140% 140%;
-  animation: ambientBgMove 20s ease-in-out infinite;
+  background: var(--color-charcoal-950); /* Pitch dark base prevents white flashes from paint lag */
   color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: var(--text-body);

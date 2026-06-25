@@ -21,7 +21,9 @@ export default function ArrivalScene() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    requestAnimationFrame(() => {
+      setMounted(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -32,17 +34,24 @@ export default function ArrivalScene() {
     if (!section || !image || !text || reduceMotion || !mounted) return;
 
     // Subtle parallax and scale on the image as user scrolls down
-    const imageTween = gsap.to(image, {
-      yPercent: 15, // Move down slightly slower than scroll
-      scale: 1.05, // Slight zoom
-      ease: 'none',
-      scrollTrigger: {
-        trigger: section,
-        start: 'top top',
-        end: 'bottom top',
-        scrub: true,
+    const imageTween = gsap.fromTo(image,
+      {
+        yPercent: 0,
+        scale: 1.1,
       },
-    });
+      {
+        yPercent: 15, // Move down slightly slower than scroll
+        scale: 1.15, // Slight zoom
+        force3D: true, // Keep on GPU compositor layer during tween
+        ease: 'none',
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: 'bottom top',
+          scrub: true,
+        },
+      }
+    );
 
     // Fade and move text up as user scrolls
     const textTween = gsap.to(text, {

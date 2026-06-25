@@ -55,7 +55,7 @@ function useSlider(count: number) {
     return Math.max(max, Math.min(0, val));
   }, [count]);
 
-  const tick = useCallback(() => {
+  const tick = useCallback(function tickFn() {
     currentX.current = lerp(currentX.current, targetX.current, 0.07);
     if (trackRef.current) {
       trackRef.current.style.transform = `translateX(${currentX.current}px)`;
@@ -65,7 +65,7 @@ function useSlider(count: number) {
       const rawIndex = Math.round(-currentX.current / (CARD_WIDTH.current + 24));
       setActiveIndex(Math.max(0, Math.min(count - 1, rawIndex)));
     }
-    rafId.current = requestAnimationFrame(tick);
+    rafId.current = requestAnimationFrame(tickFn);
   }, [count]);
 
   useEffect(() => {
@@ -115,27 +115,36 @@ function useSlider(count: number) {
 export default function FounderStoryScene() {
   const reduceMotion = useReducedMotion();
   const [cards] = useState(() =>
-    founderMilestones.map((ms: any) => ({
+    founderMilestones.map((ms: typeof founderMilestones[number]) => ({
       ...ms,
       copy: HUMAN_CARD_COPY[ms.id] || { headline: ms.title, detail: ms.description },
     }))
   );
 
-  const slider = useSlider(cards.length);
+  const {
+    trackRef,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    onWheel,
+    activeIndex,
+    goTo,
+    CARD_WIDTH,
+  } = useSlider(cards.length);
 
   // Measure card width after mount
   const cardRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const measure = () => {
       if (cardRef.current) {
-        slider.CARD_WIDTH.current = cardRef.current.getBoundingClientRect().width;
+        CARD_WIDTH.current = cardRef.current.getBoundingClientRect().width;
       }
     };
     // Small delay ensures CSS has painted
     const t = setTimeout(measure, 60);
     window.addEventListener('resize', measure);
     return () => { clearTimeout(t); window.removeEventListener('resize', measure); };
-  }, [slider.CARD_WIDTH]);
+  }, [CARD_WIDTH]);
 
   return (
     <>
@@ -155,7 +164,7 @@ export default function FounderStoryScene() {
       {/* Interactive Story Gallery */}
       <div
         className={styles.galleryContainer}
-        onWheel={slider.onWheel}
+        onWheel={onWheel}
         aria-label="The Story of RS Mobile Corner"
       >
         <LightRays raysOrigin="center" style={{ opacity: 0.01 }} />
@@ -163,18 +172,18 @@ export default function FounderStoryScene() {
         {/* Draggable track */}
         <div
           className={styles.sliderViewport}
-          onPointerDown={slider.onPointerDown}
-          onPointerMove={slider.onPointerMove}
-          onPointerUp={slider.onPointerUp}
-          onPointerLeave={slider.onPointerUp}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerLeave={onPointerUp}
         >
-          <div ref={slider.trackRef} className={styles.sliderTrack}>
+          <div ref={trackRef} className={styles.sliderTrack}>
             {cards.map((ms, i) => (
               <div
                 key={ms.id}
                 ref={i === 0 ? cardRef : undefined}
-                className={`${styles.storyCard} ${slider.activeIndex === i ? styles.storyCardActive : ''}`}
-                onClick={() => slider.goTo(i)}
+                className={`${styles.storyCard} ${activeIndex === i ? styles.storyCardActive : ''}`}
+                onClick={() => goTo(i)}
                 aria-label={`Story milestone: ${ms.title}`}
               >
                 {/* Year badge */}
@@ -188,7 +197,7 @@ export default function FounderStoryScene() {
 
                 {/* Quote footer */}
                 <blockquote className={styles.cardQuote}>
-                  "{ms.quote}"
+                  &ldquo;{ms.quote}&rdquo;
                 </blockquote>
               </div>
             ))}
@@ -200,8 +209,8 @@ export default function FounderStoryScene() {
           {cards.map((ms, i) => (
             <button
               key={ms.id}
-              className={`${styles.dot} ${slider.activeIndex === i ? styles.dotActive : ''}`}
-              onClick={() => slider.goTo(i)}
+              className={`${styles.dot} ${activeIndex === i ? styles.dotActive : ''}`}
+              onClick={() => goTo(i)}
               aria-label={`Go to ${ms.year}`}
             />
           ))}

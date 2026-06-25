@@ -12,9 +12,10 @@ if (typeof window !== 'undefined') {
 }
 
 const FACTS = [
-  { value: business.experience, label: 'Years in business' },
-  { value: business.repairs, label: 'Repairs completed' },
-  { value: '100%', label: 'Personally handled' },
+  { value: business.experience, label: 'Years of Trust', sub: 'Dedicated mobile repair experience' },
+  { value: business.repairs, label: 'Repairs Completed', sub: 'Phones restored at the bench' },
+  { value: '100%', label: 'Personally Handled', sub: 'Every device repaired by Rahim Bhai' },
+  { value: business.daysOpen, label: 'Weekly Availability', sub: `Open daily: ${business.hours}` },
 ];
 
 export default function TrustProofScene() {
@@ -26,71 +27,60 @@ export default function TrustProofScene() {
   useEffect(() => {
     if (typeof window === 'undefined' || reduceMotion) return;
     
-    const runway = runwayRef.current;
-    if (!runway) return;
+    const section = runwayRef.current;
+    if (!section) return;
 
     const facts = factRefs.current.filter(Boolean) as HTMLDivElement[];
-    
-    // Total scroll distance based on number of facts
-    const vh = window.innerHeight;
-    const totalScrollPx = vh * 1.5;
-    runway.style.height = `${Math.round(totalScrollPx + vh)}px`;
+    const statement = statementRef.current;
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: runway,
-        start: 'top top',
-        end: `+=${Math.round(totalScrollPx)}`,
-        scrub: 1,
+    // Smooth staggered reveal animation as the section scrolls into view
+    const entranceAnim = gsap.fromTo([statement, ...facts],
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 80%',
+        }
       }
-    });
-
-    // Fade out the main statement slightly
-    tl.to(statementRef.current, { opacity: 0.2, scale: 0.95, duration: 1 }, 0);
-
-    // Stagger the facts
-    facts.forEach((fact, i) => {
-      // Fade in and up
-      tl.fromTo(fact, 
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1 },
-        i * 0.8 // stagger start times
-      );
-    });
+    );
 
     return () => {
-      tl.scrollTrigger?.kill();
-      tl.kill();
+      entranceAnim.scrollTrigger?.kill();
+      entranceAnim.kill();
     };
   }, [reduceMotion]);
 
   return (
     <section ref={runwayRef} className={styles.scene} id="proof" aria-label="Proof of Trust">
-      <div className={styles.stickyViewport}>
-        <div className={styles.inner}>
-          
-          <div className={styles.statementZone}>
-            <span className={styles.eyebrow}>Reputation</span>
-            <h2 ref={statementRef} className={styles.statement}>
-              Trust isn't claimed.<br />
-              <span className={styles.statementAccent}>It's earned.</span>
-            </h2>
-          </div>
-
-          <div className={styles.factsZone} aria-live="polite">
-            {FACTS.map((fact, i) => (
-              <div 
-                key={fact.label}
-                ref={el => { factRefs.current[i] = el; }}
-                className={styles.factCard}
-              >
-                <span className={styles.factValue}>{fact.value}</span>
-                <span className={styles.factLabel}>{fact.label}</span>
-              </div>
-            ))}
-          </div>
-
+      <div className={styles.inner}>
+        
+        <div className={styles.statementZone}>
+          <span className={styles.eyebrow}>Reputation</span>
+          <h2 ref={statementRef} className={styles.statement}>
+            Trust isn&apos;t claimed.<br />
+            <span className={styles.statementAccent}>It&apos;s earned.</span>
+          </h2>
         </div>
+
+        <div className={styles.factsZone} aria-live="polite">
+          {FACTS.map((fact, i) => (
+            <div 
+              key={fact.label}
+              ref={el => { factRefs.current[i] = el; }}
+              className={styles.factCard}
+            >
+              <span className={styles.factValue}>{fact.value}</span>
+              <span className={styles.factLabel}>{fact.label}</span>
+              <span className={styles.factSub}>{fact.sub}</span>
+            </div>
+          ))}
+        </div>
+
       </div>
     </section>
   );

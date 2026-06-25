@@ -18,6 +18,9 @@
   background: var(--color-bg);
   padding: var(--section-padding-x);
   position: relative;
+  transform: translateZ(0); /* Promote to GPU layer */
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .introInner {
@@ -61,6 +64,9 @@
   padding: 3rem 0 4rem;
   background: var(--color-charcoal-950);
   overflow: hidden;
+  transform: translateZ(0); /* Promote to GPU layer */
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 /* ── Slider Viewport (clips the track, but don't hide overflow on x so cards peek) */

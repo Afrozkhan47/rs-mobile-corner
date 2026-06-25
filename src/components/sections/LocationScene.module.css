@@ -136,6 +136,10 @@
 }
 
 .primaryAction, .secondaryAction {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
   padding: 1.2rem 2.5rem;
   border-radius: 999px;
   font-family: var(--font-heading);
@@ -174,6 +178,10 @@
     gap: 3rem;
   }
 
+  .ctaSection {
+    width: 100%;
+  }
+
   .actions {
     flex-direction: column;
     width: 100%;
@@ -182,5 +190,6 @@
 
   .primaryAction, .secondaryAction {
     width: 100%;
+    box-sizing: border-box;
   }
 }

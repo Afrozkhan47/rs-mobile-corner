@@ -83,7 +83,7 @@ export default function AccessoriesScene() {
       );
     }
 
-    items.forEach((item, i) => {
+    items.forEach((item) => {
       // Subtle reveal for each row
       gsap.fromTo(
         item,
