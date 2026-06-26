@@ -44,6 +44,11 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   metadataBase: new URL("https://rsmobilecorner.vercel.app"), // Change if using another domain
 
+  verification: {
+
+    google: "B_xLvbhjgl7CoQre6W9BFPZpID1JhUuebQYAhaZoPWc",
+
+  },
   title: {
     default: "RS Mobile Corner",
     template: "%s | RS Mobile Corner",
