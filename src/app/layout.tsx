@@ -46,7 +46,7 @@ export const metadata: Metadata = {
 
   verification: {
 
-    google: "B_xLvbhjgl7CoQre6W9BFPZpID1JhUuebQYAhaZoPWc",
+    google: "qledBtheGekXwGQ3mpuFlpVNRDtiWWnSqLG0hLyVaUc",
 
   },
   title: {
