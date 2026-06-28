@@ -5,7 +5,7 @@ import {
   Instrument_Serif,
   Cormorant_Garamond,
 } from "next/font/google";
-
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import SmoothScrollProvider from "@/providers/SmoothScrollProvider";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
@@ -151,6 +151,7 @@ export default function RootLayout({
     >
       <body>
         {/* Film grain */}
+        <GoogleAnalytics />
         <div className="noise-overlay" aria-hidden="true" />
 
         {/* Ambient lighting */}
